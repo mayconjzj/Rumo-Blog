@@ -1,7 +1,7 @@
 import "server-only";
 
 import { neon } from "@neondatabase/serverless";
-import type { BlogPost } from "@/lib/blogs";
+import type { BlogPost } from "@/lib/blog-types";
 
 export type NewBlogPost = Pick<BlogPost, "slug" | "title" | "category" | "excerpt" | "content" | "status">;
 export type UpdateBlogPost = NewBlogPost & { id: number };
