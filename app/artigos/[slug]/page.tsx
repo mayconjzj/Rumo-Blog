@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "../../components/CommentsSection";
-import { getPublishedPostBySlug } from "@/lib/blogs";
+import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blogs";
 
 type ArticleSource = { title: string; url: string };
 
@@ -29,9 +29,13 @@ function formatDate(value: string | Date | null | undefined) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "UTC" }).format(date);
 }
 
-function ArticleExtras({ toc, sources, related }: { toc: { heading: string; id: string }[]; sources: ArticleSource[]; related: { slug: string; title: string; category: string; excerpt: string }[] }) {
+function ArticleExtras({ toc }: { toc: { heading: string; id: string }[] }) {
+  if (!toc.length) return null;
+  return <nav className="article-toc" aria-label="Sumário deste artigo"><p>SUMÁRIO DO ARTIGO</p><ol>{toc.map((item) => <li key={item.id}><a href={`#${item.id}`}>{item.heading}</a></li>)}</ol></nav>;
+}
+
+function ArticleFooterExtras({ sources, related }: { sources: ArticleSource[]; related: { slug: string; title: string; category: string; excerpt: string }[] }) {
   return <>
-    {toc.length > 0 && <nav className="article-toc" aria-label="Sumário deste artigo"><p>SUMÁRIO DO ARTIGO</p><ol>{toc.map((item) => <li key={item.id}><a href={`#${item.id}`}>{item.heading}</a></li>)}</ol></nav>}
     {sources.length > 0 && <section className="article-sources" aria-labelledby="article-sources-title"><span className="article-kicker">LEITURA E REFERÊNCIAS</span><h2 id="article-sources-title">Fontes consultadas</h2><ul>{sources.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} <span aria-hidden="true">↗</span></a></li>)}</ul></section>}
     {related.length > 0 && <section className="related-articles" aria-labelledby="related-articles-title"><span className="article-kicker">CONTINUE EXPLORANDO</span><h2 id="related-articles-title">Artigos relacionados</h2><div className="related-article-grid">{related.map((item) => <article className="related-article-card" key={item.slug}><span className="category">{item.category}</span><h3><Link href={`/artigos/${item.slug}`}>{item.title}</Link></h3><p>{item.excerpt}</p><Link className="related-read-link" href={`/artigos/${item.slug}`}>Ler artigo <span aria-hidden="true">↗</span></Link></article>)}</div></section>}
   </>;
@@ -159,7 +163,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {structured?.coverImage ? <img src={structured.coverImage} alt={post.title} style={{ display: "block", width: "min(1000px, calc(100% - 48px))", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
           <div className="reading-body">
             {structured?.intro && <p className="reading-intro" style={{ whiteSpace: "pre-line" }}>{structured.intro}</p>}
-            <ArticleExtras toc={toc} sources={Array.isArray(structured?.sources) ? structured.sources.filter((source) => source?.title && /^https:\/\//.test(source.url)) : []} related={related.map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+            <ArticleExtras toc={toc} />
             {structured ? contentSections.map((section, index) => (
               <section key={index} id={section.heading?.trim() ? sectionId(section.heading.trim()) : undefined}>
                 {section.heading && <h2>{section.heading}</h2>}
@@ -167,7 +171,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {section.imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={section.imageUrl} alt={section.caption || section.heading || post.title} style={{ display: "block", width: "100%", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
               </section>
             )) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
-            <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
+            <ArticleFooterExtras sources={Array.isArray(structured?.sources) ? structured.sources.filter((source) => source?.title && /^https:\/\//.test(source.url)) : []} related={related.map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+            <ArticleFooterExtras sources={article.sources ?? []} related={articleContents.filter((item) => item.slug !== article.slug).sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category)).slice(0, 3).map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+          <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
         </article>
         <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
         <section className="reading-back"><div className="container reading-back-inner"><div><span className="section-number">CONTINUE EXPLORANDO</span><h2>Mais ideias para <em>seguir em frente.</em></h2></div><Link className="button button-primary" href="/#artigos">Voltar aos artigos <span aria-hidden="true">↗</span></Link></div></section>
@@ -233,7 +239,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         <div className="reading-body">
           <p className="reading-intro">{article.intro}</p>
-          <ArticleExtras toc={article.sections.map((section) => ({ heading: section.heading, id: sectionId(section.heading) }))} sources={article.sources ?? []} related={articleContents.filter((item) => item.slug !== article.slug).sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category)).slice(0, 3).map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+          <ArticleExtras toc={article.sections.map((section) => ({ heading: section.heading, id: sectionId(section.heading) }))} />
           {article.sections.map((section) => (
             <section key={section.heading} id={sectionId(section.heading)}>
               <h2>{section.heading}</h2>
