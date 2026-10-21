@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "../../components/CommentsSection";
+import { getPublishedPostBySlug } from "@/lib/blogs";
 
 type ArticleContent = {
   slug: string;
@@ -96,6 +97,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const post = await getPublishedPostBySlug(slug);
+  if (post) return { title: post.title + " | Rumo", description: post.excerpt };
   const article = articleContents.find((item) => item.slug === slug);
   if (!article) return { title: "Artigo não encontrado | Rumo" };
   return {
@@ -106,6 +109,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const post = await getPublishedPostBySlug(slug);
+  if (post) {
+    const paragraphs = post.content.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+    return (
+      <main className="reading-page">
+        <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
+        <header className="site-header"><div className="container nav-wrap">
+          <Link className="brand" href="/" aria-label="Rumo, página inicial"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
+          <nav className="main-nav" aria-label="Navegação principal"><Link href="/">Início</Link><Link className="nav-active" href="/#artigos">Artigos</Link><Link href="/#sobre">Sobre</Link></nav>
+          <Link className="admin-link" href="/login">Área administrativa <span aria-hidden="true">↗</span></Link><Link className="mobile-admin" href="/login" aria-label="Área administrativa">↗</Link>
+        </div></header>
+        <div className="article-breadcrumb container"><Link href="/">Início</Link><span>/</span><Link href="/#artigos">Artigos</Link><span>/</span><span>{post.category}</span></div>
+        <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><time>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(post.published_at ?? post.created_at))}</time></div></header>
+          <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>
+          <div className="reading-body">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}<div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
+        </article>
+        <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
+        <section className="reading-back"><div className="container reading-back-inner"><div><span className="section-number">CONTINUE EXPLORANDO</span><h2>Mais ideias para <em>seguir em frente.</em></h2></div><Link className="button button-primary" href="/#artigos">Voltar aos artigos <span aria-hidden="true">↗</span></Link></div></section>
+        <footer className="site-footer"><div className="container footer-inner"><Link className="brand brand-footer" href="/"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link><span>Informação para decisões melhores.</span><span>© 2026 Rumo Blog</span></div></footer>
+      </main>
+    );
+  }
   const article = articleContents.find((item) => item.slug === slug);
   if (!article) notFound();
 
