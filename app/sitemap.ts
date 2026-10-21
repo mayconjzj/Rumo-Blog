@@ -30,19 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     add({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: 0.4 });
   }
 
-  // Editorial fallback pages are public even when no matching database post exists.
-  for (const slug of [
-    "investir-bem-comeca-por-entender",
-    "juros-compostos-o-tempo-como-aliado",
-    "como-ler-os-indicadores-de-uma-empresa",
-  ]) {
-    add({
-      url: `${siteUrl}/artigos/${encodeURIComponent(slug)}`,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    });
-  }
-
   try {
     const posts = await getPublishedPosts();
     for (const post of posts) {
