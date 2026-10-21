@@ -22,10 +22,11 @@ function getSql() {
 export async function getPublishedPosts(): Promise<BlogPost[]> {
   const sql = getSql();
   if (!sql) return [];
-  return sql.query(
+  const rows = await sql.query(
     "SELECT id, slug, title, category, excerpt, content, status, created_at, updated_at, published_at FROM public.blog_posts WHERE status = 'published' ORDER BY COALESCE(published_at, created_at) DESC",
     [],
-  ) as Promise<BlogPost[]>;
+  );
+  return rows as unknown as BlogPost[];
 }
 
 export async function getPublishedPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -34,15 +35,17 @@ export async function getPublishedPostBySlug(slug: string): Promise<BlogPost | n
   const rows = await sql.query(
     "SELECT id, slug, title, category, excerpt, content, status, created_at, updated_at, published_at FROM public.blog_posts WHERE status = 'published' AND slug = $1 LIMIT 1",
     [slug],
-  ) as BlogPost[];
-  return rows[0] ?? null;
+  );
+  const posts = rows as unknown as BlogPost[];
+  return posts[0] ?? null;
 }
 
 export async function getAdminPosts(): Promise<BlogPost[]> {
   const sql = getSql();
   if (!sql) return [];
-  return sql.query(
+  const rows = await sql.query(
     "SELECT id, slug, title, category, excerpt, content, status, created_at, updated_at, published_at FROM public.blog_posts ORDER BY created_at DESC",
     [],
-  ) as Promise<BlogPost[]>;
+  );
+  return rows as unknown as BlogPost[];
 }
