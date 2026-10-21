@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import { getAdminPosts } from "@/lib/blogs";
-import ArticleEditor from "../ArticleEditor";
-import { updateBlogAction } from "../actions";
-import LogoutButton from "../LogoutButton";
+import ArticleEditor from "../../ArticleEditor";
+import { updateBlogAction } from "../../actions";
+import LogoutButton from "../../LogoutButton";
 
 export const dynamic = "force-dynamic";
 
