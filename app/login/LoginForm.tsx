@@ -67,8 +67,6 @@ export default function LoginForm() {
                 </button>
               </div>
 
-              <Link className="login-home-link" href="/esqueci-senha">Esqueci minha senha</Link>
-
               <button className="login-submit" type="submit" disabled={pending}>{pending ? "Entrando..." : "Entrar no painel"} <span aria-hidden="true">↗</span></button>
               {state.error && <p className="login-message" role="status">{state.error}</p>}
             </form>
