@@ -2,18 +2,29 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth/client";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage(
-      "A interface está pronta, mas a autenticação ainda precisa ser conectada a um serviço seguro. Nenhum login foi realizado."
-    );
+    setMessage("");
+
+    const { error } = await authClient.signIn.email({ email, password });
+
+    if (error) {
+      setMessage("Não foi possível entrar. Confira o e-mail e a senha.");
+      return;
+    }
+
+    router.replace("/admin");
+    router.refresh();
   }
 
   return (
