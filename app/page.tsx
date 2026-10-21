@@ -1,3 +1,5 @@
+import { getPublishedPosts } from "@/lib/blogs";
+
 type Article = {
   slug: string;
   category: string;
@@ -8,7 +10,7 @@ type Article = {
   featured?: boolean;
 };
 
-const articles: Article[] = [
+const fallbackArticles: Article[] = [
   {
     slug: "investir-bem-comeca-por-entender",
     category: "INVESTIMENTOS",
@@ -62,7 +64,26 @@ function ArticleCard({ article }: { article: Article }) {
   );
 }
 
-export default function HomePage() {
+function formatArticleDate(value: string | Date) {
+  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" })
+    .format(new Date(value))
+    .replace(".", "")
+    .toUpperCase();
+}
+
+export default async function HomePage() {
+  const publishedPosts = await getPublishedPosts();
+  const savedArticles: Article[] = publishedPosts.map((post, index) => ({
+    slug: post.slug,
+    category: post.category,
+    title: post.title,
+    excerpt: post.excerpt,
+    date: formatArticleDate(post.published_at ?? post.created_at),
+    readTime: Math.max(1, Math.ceil(post.content.trim().split(/\\s+/).length / 220)) + " min de leitura",
+    featured: index === 0,
+  }));
+  const savedSlugs = new Set(savedArticles.map((article) => article.slug));
+  const articles = [...savedArticles, ...fallbackArticles.filter((article) => !savedSlugs.has(article.slug))];
   const featured = articles.find((article) => article.featured) ?? articles[0];
   const latest = articles.filter((article) => !article.featured);
 
