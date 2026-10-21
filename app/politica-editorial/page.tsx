@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 export const metadata = { title: "Política editorial | Revista Rumo", description: "Escopo, avaliação, custos e decisões editoriais da Revista Rumo." };
 export default function EditorialPolicy() {
   return <main className="editorial-document">
@@ -11,7 +12,6 @@ export default function EditorialPolicy() {
     <section><h2>Prazos e comunicação</h2><p>Não há prazo fixo anunciado para triagem, parecer ou decisão. O autor correspondente deve manter o e-mail atualizado e guardar o número de acompanhamento. As comunicações dependem da atuação da equipe editorial; não presuma notificações automáticas.</p></section>
     <section><h2>Autoria, originalidade e conflitos</h2><p>Os autores são responsáveis pela originalidade, exatidão, referências e concordância de todos os coautores. Plágio, fabricação ou falsificação de dados, conflitos não declarados e problemas de ética podem levar à rejeição. Financiamento e uso relevante de IA devem ser informados.</p></section>
     <section><h2>Correções e transparência</h2><p>Erros relevantes ou suspeitas de má conduta devem ser comunicados à equipe editorial. DOI, indexação, fator de impacto, periodicidade e composição do conselho editorial só serão anunciados quando formalmente definidos e verificáveis.</p></section>
-    <nav className="editorial-document-links"><Link href="/avaliacao-por-pares">Avaliação por pares</Link><Link href="/etica-publicacao">Ética e integridade</Link><Link href="/privacidade">Privacidade</Link></nav>
-    <Link href="/submeter" className="editorial-cta">Consultar requisitos e submeter artigo ↗</Link>
+    <EditorialDocumentNavigation />
   </main>;
 }

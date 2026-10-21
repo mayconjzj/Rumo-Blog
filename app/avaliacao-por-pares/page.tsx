@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 export const metadata = { title: "Avaliação por pares | Revista Rumo", description: "Etapas, critérios e responsabilidades na avaliação científica de manuscritos." };
 export default function PeerReviewPolicy() {
  return <main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Avaliação por pares</h1>
@@ -7,5 +8,5 @@ export default function PeerReviewPolicy() {
  <section><h2>Critérios de avaliação</h2><p>Os pareceres podem considerar relevância e contribuição, clareza dos objetivos, adequação metodológica, coerência entre evidências e conclusões, reconhecimento de limitações, referências e qualidade da escrita.</p></section>
  <section><h2>Confidencialidade e anonimização</h2><p>O procedimento previsto é duplo-cego. Remova do PDF nomes, afiliações, agradecimentos identificadores e metadados pessoais. Os dados de autoria permanecem no formulário editorial. A anonimização ajuda a reduzir a identificação, mas não garante anonimato absoluto.</p></section>
  <section><h2>Responsabilidades</h2><p>Avaliadores devem declarar conflitos, tratar o manuscrito como confidencial e apresentar comentários técnicos, respeitosos e fundamentados. O sistema registra convites, pareceres e decisões, mas a realização e a qualidade da avaliação dependem da equipe editorial e de avaliadores qualificados.</p></section>
- <Link href="/submeter" className="editorial-cta">Preparar uma submissão ↗</Link></main>;
+ <EditorialDocumentNavigation /></main>;
 }

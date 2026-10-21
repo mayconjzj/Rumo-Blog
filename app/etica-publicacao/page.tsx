@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 
 export const metadata = {
   title: "Ética e integridade | Revista Rumo",
@@ -19,7 +20,7 @@ export default function PublicationEthics() {
       <section><h2>Uso de inteligência artificial</h2><p>Declare o uso relevante de ferramentas de IA na elaboração, análise, tradução ou produção de conteúdo, conforme aplicável. Ferramentas de IA não podem ser listadas como autoras. Os autores humanos permanecem responsáveis pela exatidão, originalidade, referências e integridade do conteúdo.</p></section>
       <section><h2>Avaliação e confidencialidade</h2><p>Manuscritos não publicados e pareceres devem ser tratados como confidenciais. Avaliadores não devem compartilhar arquivos nem usar informações não publicadas fora do processo editorial. Conflitos de interesse devem ser informados antes de aceitar a avaliação.</p></section>
       <section><h2>Denúncias, correções e retratações</h2><p>Suspeitas de má conduta devem ser comunicadas à equipe editorial com informações verificáveis. Os casos devem ser examinados com imparcialidade e confidencialidade, permitindo resposta das partes envolvidas. Quando justificado, podem ser necessárias correções, avisos ou retratações.</p></section>
-      <Link href="/submeter" className="editorial-cta">Ir para o formulário de submissão ↗</Link>
+      <EditorialDocumentNavigation />
     </main>
   );
 }

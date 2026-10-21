@@ -26,13 +26,16 @@ export default function ResearchSiteHeader() {
       </Link>
 
       <nav className="research-desktop-links" aria-label="Navegação principal">
-        {navigation
-          .filter((item) => item.href !== pathname)
-          .map((item) => (
-            <Link href={item.href} key={item.href}>
-              {item.href === "/submeter" ? "Submeter artigo ↗" : item.label}
-            </Link>
-          ))}
+        {navigation.map((item) => (
+          <Link
+            href={item.href}
+            key={item.href}
+            className={item.href === pathname ? "nav-active" : undefined}
+            aria-current={item.href === pathname ? "page" : undefined}
+          >
+            {item.href === "/submeter" ? "Submeter artigo ↗" : item.label}
+          </Link>
+        ))}
       </nav>
 
       <details className="mobile-nav-menu research-mobile-menu">
@@ -48,6 +51,7 @@ export default function ResearchSiteHeader() {
             <Link
               href={item.href}
               key={item.href}
+              className={item.href === pathname ? "nav-active" : undefined}
               aria-current={item.href === pathname ? "page" : undefined}
             >
               {item.label}
