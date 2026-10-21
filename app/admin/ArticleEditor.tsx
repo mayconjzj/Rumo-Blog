@@ -26,27 +26,33 @@ function parseContent(raw?: string): ArticleDraft {
 
 export default function ArticleEditor({ action, submitLabel, initial }: Props) {
   const firstDraft = useMemo(() => parseContent(initial?.content), [initial?.content]);
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [slug, setSlug] = useState(initial?.slug ?? "");
+  const [category, setCategory] = useState(initial?.category ?? "EDUCAÇÃO FINANCEIRA");
+  const [excerpt, setExcerpt] = useState(initial?.excerpt ?? "");
   const [intro, setIntro] = useState(firstDraft.intro);
   const [coverImage, setCoverImage] = useState(firstDraft.coverImage);
   const [sections, setSections] = useState<Section[]>(firstDraft.sections);
+  const [showPreview, setShowPreview] = useState(true);
   const serialized = JSON.stringify({ version: 1, intro, coverImage, sections });
   const update = (id: string, field: keyof Section, value: string) => setSections((items) => items.map((s) => s.id === id ? { ...s, [field]: value } : s));
   const addSection = () => setSections((items) => [...items, { id: `s${Date.now()}`, heading: "", text: "", imageUrl: "", caption: "" }]);
+  const hasPreviewBody = Boolean(intro.trim() || sections.some((section) => section.heading.trim() || section.text.trim() || section.imageUrl.trim()));
 
   return (
     <form action={action} style={{ display: "grid", gap: 5 }}>
       <label style={labelStyle} htmlFor="title">Título do artigo</label>
-      <input id="title" name="title" maxLength={180} required defaultValue={initial?.title ?? ""} placeholder="Ex.: Como analisar uma empresa" style={inputStyle} />
+      <input id="title" name="title" maxLength={180} required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Como analisar uma empresa" style={inputStyle} />
       <label style={labelStyle} htmlFor="slug">Endereço do artigo (slug)</label>
-      <input id="slug" name="slug" maxLength={180} defaultValue={initial?.slug ?? ""} placeholder="como-analisar-uma-empresa" style={inputStyle} />
+      <input id="slug" name="slug" maxLength={180} value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="como-analisar-uma-empresa" style={inputStyle} />
       <label style={labelStyle} htmlFor="category">Categoria</label>
-      <input id="category" name="category" maxLength={80} required defaultValue={initial?.category ?? "EDUCAÇÃO FINANCEIRA"} style={inputStyle} />
+      <input id="category" name="category" maxLength={80} required value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle} />
       <label style={labelStyle} htmlFor="excerpt">Resumo para a página inicial</label>
-      <textarea id="excerpt" name="excerpt" maxLength={320} required rows={3} defaultValue={initial?.excerpt ?? ""} placeholder="Uma apresentação breve do artigo." style={{ ...inputStyle, resize: "vertical" }} />
+      <textarea id="excerpt" name="excerpt" maxLength={320} required rows={3} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Uma apresentação breve do artigo." style={{ ...inputStyle, resize: "vertical" }} />
 
       <div style={{ marginTop: 18, padding: 16, background: "#f4f7fb", border: "1px solid #e1e6eb" }}>
         <p style={{ margin: "0 0 5px", color: "#195AB4", fontSize: 10, fontWeight: 800, letterSpacing: ".12em" }}>ESTRUTURA DO ARTIGO</p>
-        <p style={{ margin: 0, color: "#687789", fontSize: 12, lineHeight: 1.6 }}>Monte o texto em blocos. Cada seção pode ter título, texto e imagem. Para imagens, cole o endereço direto da imagem (URL terminada em .jpg, .png ou .webp, por exemplo).</p>
+        <p style={{ margin: 0, color: "#687789", fontSize: 12, lineHeight: 1.6 }}>Monte o texto em blocos. A pré-visualização ao vivo abaixo acompanha o título, o resumo, os textos e as imagens enquanto você edita.</p>
       </div>
 
       <label style={labelStyle} htmlFor="coverImage">Imagem de capa (URL opcional)</label>
@@ -80,13 +86,37 @@ export default function ArticleEditor({ action, submitLabel, initial }: Props) {
       <input type="hidden" name="content" value={serialized} />
       {initial?.id !== undefined && <input type="hidden" name="id" value={initial.id} />}
       <input type="hidden" name="originalSlug" value={initial?.slug ?? ""} />
-      <label style={labelStyle} htmlFor="status">Status do artigo</label>
-      <select id="status" name="status" defaultValue={initial?.status ?? "published"} style={inputStyle}>
-        <option value="published">Publicado</option>
-        <option value="draft">Rascunho</option>
-      </select>
-      <p style={{ margin: "8px 0", color: "#7a8795", fontSize: 11, lineHeight: 1.6 }}>Você pode salvar como rascunho e publicar depois. Revise as URLs das imagens antes de salvar.</p>
-      <button type="submit" style={{ padding: "14px 16px", border: 0, color: "#fff", background: "#05132A", cursor: "pointer", fontSize: 12, fontWeight: 800 }}>{submitLabel} ↗</button>
+
+      <section style={{ marginTop: 24, border: "1px solid #cbd7e4", background: "#f7f9fc", padding: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div><p style={{ margin: "0 0 4px", color: "#195AB4", fontSize: 10, fontWeight: 800, letterSpacing: ".12em" }}>REVISÃO</p><h3 style={{ margin: 0, color: "#05132A", fontSize: 18 }}>Pré-visualização do artigo</h3></div>
+          <button type="button" onClick={() => setShowPreview((value) => !value)} style={{ padding: "9px 12px", border: "1px solid #cbd7e4", background: "#fff", color: "#195AB4", cursor: "pointer", fontSize: 11, fontWeight: 800 }}>{showPreview ? "Ocultar prévia" : "Mostrar prévia"}</button>
+        </div>
+        {showPreview && <article style={{ marginTop: 16, background: "#fff", border: "1px solid #e1e6eb", padding: "clamp(16px, 3vw, 28px)", overflowWrap: "anywhere" }}>
+          <p style={{ margin: "0 0 10px", color: "#195AB4", fontSize: 10, fontWeight: 800, letterSpacing: ".12em" }}>{category.trim() || "CATEGORIA"}</p>
+          <h2 style={{ margin: "0 0 12px", color: "#05132A", fontFamily: "Georgia, serif", fontSize: "clamp(25px, 4vw, 36px)", lineHeight: 1.15 }}>{title.trim() || "Título do artigo"}</h2>
+          <p style={{ margin: "0 0 22px", color: "#687789", fontSize: 15, lineHeight: 1.7 }}>{excerpt.trim() || "O resumo do artigo aparecerá aqui."}</p>
+          {coverImage.trim() && <img src={coverImage} alt="" style={{ display: "block", width: "100%", maxHeight: 320, objectFit: "cover", marginBottom: 22 }} />}
+          <div style={{ color: "#26384c", fontSize: 14, lineHeight: 1.9, whiteSpace: "pre-line" }}>{intro.trim() && <p style={{ margin: "0 0 22px", fontWeight: 600 }}>{intro}</p>}
+            {sections.map((section, index) => <section key={section.id} style={{ marginTop: 24 }}>
+              {section.heading.trim() && <h3 style={{ margin: "0 0 10px", color: "#05132A", fontFamily: "Georgia, serif", fontSize: 22, lineHeight: 1.35 }}>{section.heading}</h3>}
+              {section.text.trim().split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex} style={{ margin: "0 0 14px" }}>{paragraph.trim()}</p>)}
+              {section.imageUrl.trim() && <figure style={{ margin: "16px 0" }}><img src={section.imageUrl} alt={section.caption || section.heading || `Imagem da seção ${index + 1}`} style={{ display: "block", width: "100%", maxHeight: 340, objectFit: "cover" }} />{section.caption.trim() && <figcaption style={{ marginTop: 6, color: "#7a8795", fontSize: 11 }}>{section.caption}</figcaption>}</figure>}
+            </section>)}
+            {!hasPreviewBody && <p style={{ color: "#7a8795", fontStyle: "italic" }}>A introdução e as seções preenchidas aparecerão nesta área.</p>}
+          </div>
+          <p style={{ margin: "26px 0 0", paddingTop: 14, borderTop: "1px solid #e1e6eb", color: "#8a96a3", fontSize: 10 }}>Prévia de edição — ainda não publicada.</p>
+        </article>}
+      </section>
+
+      <div style={{ marginTop: 18, padding: 14, background: "#fff8e7", border: "1px solid #f0d99d", color: "#6b4c00", fontSize: 12, lineHeight: 1.7 }}>
+        <strong>Publicação protegida.</strong> Salvar rascunho não publica o conteúdo. Se você estiver editando um artigo já publicado, salvar como rascunho o retirará do ar; para manter a versão atual publicada, não salve como rascunho.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginTop: 10 }}>
+        <button type="submit" name="intent" value="draft" style={{ padding: "14px 16px", border: "1px solid #cbd7e4", color: "#05132A", background: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 800 }}>Salvar como rascunho</button>
+        <button type="submit" name="intent" value="publish" onClick={(event) => { if (!window.confirm("Publicar este artigo agora? O conteúdo ficará visível no site.")) event.preventDefault(); }} style={{ padding: "14px 16px", border: 0, color: "#fff", background: "#195AB4", cursor: "pointer", fontSize: 12, fontWeight: 800 }}>Publicar artigo ↗</button>
+      </div>
+      <p style={{ margin: "6px 0 0", color: "#7a8795", fontSize: 11, lineHeight: 1.6 }}>O botão principal de salvamento mantém o artigo como rascunho. A publicação exige uma ação separada e confirmação.</p>
     </form>
   );
 }
