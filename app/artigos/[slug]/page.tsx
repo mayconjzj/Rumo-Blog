@@ -172,7 +172,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </section>
             )) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
             <ArticleFooterExtras sources={Array.isArray(structured?.sources) ? structured.sources.filter((source) => source?.title && /^https:\/\//.test(source.url)) : []} related={related.map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
-            <ArticleFooterExtras sources={article.sources ?? []} related={articleContents.filter((item) => item.slug !== article.slug).sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category)).slice(0, 3).map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
           <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
         </article>
         <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
