@@ -166,7 +166,7 @@ function articleMetadata(title: string, description: string, slug: string, publi
 }
 
 function jsonLd(data: Record<string, unknown>) {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\\\u003c") }} />;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -185,7 +185,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       post.slug,
       published ? new Date(published).toISOString() : undefined,
       post.updated_at ? new Date(post.updated_at).toISOString() : undefined,
-      coverImage && /^https?:\\/\\//.test(coverImage) ? coverImage : undefined,
+      coverImage && coverImage.startsWith("https://") || coverImage.startsWith("http://") ? coverImage : undefined,
     );
   }
   const article = articleContents.find((item) => item.slug === slug);
@@ -209,7 +209,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const toc = contentSections.filter((section) => section.heading?.trim()).map((section) => ({ heading: section.heading!.trim(), id: sectionId(section.heading!.trim()) }));
     const postPublished = post.published_at ?? post.created_at;
     const postModified = post.updated_at ?? postPublished;
-    const postImage = structured?.coverImage && /^https?:\\/\\//.test(structured.coverImage) ? structured.coverImage : undefined;
+    const postImage = structured?.coverImage && (structured.coverImage.startsWith("https://") || structured.coverImage.startsWith("http://")) ? structured.coverImage : undefined;
     const postJsonLd = {
       "@context": "https://schema.org",
       "@type": "Article",
