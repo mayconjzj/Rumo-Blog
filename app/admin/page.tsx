@@ -29,13 +29,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     <main style={{ minHeight: "100vh", background: "#f4f6f8", color: "#17283b" }}>
       <header style={{ background: "#05132A", color: "#fff", padding: "22px max(22px, calc((100vw - 1160px) / 2))", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
         <Link className="brand" href="/" style={{ color: "#fff" }}><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}><span style={{ color: "#c1ccda", fontSize: 12 }}>Conectado como {email}</span><LogoutButton /><Link href="/admin/metricas" style={{ fontSize: 12, color: "#87BAFF", fontWeight: 700 }}>Métricas ↗</Link><Link href="/" style={{ fontSize: 12, color: "#87BAFF" }}>Ver site ↗</Link></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}><span style={{ color: "#c1ccda", fontSize: 12 }}>Conectado como {email}</span><LogoutButton /><Link href="/admin/submissoes" style={{ fontSize: 12, color: "#87BAFF", fontWeight: 700 }}>Submissões científicas ↗</Link><Link href="/admin/metricas" style={{ fontSize: 12, color: "#87BAFF", fontWeight: 700 }}>Métricas ↗</Link><Link href="/" style={{ fontSize: 12, color: "#87BAFF" }}>Ver site ↗</Link></div>
       </header>
       <div style={{ maxWidth: 1160, margin: "0 auto", padding: "42px 22px 70px" }}>
         <div style={{ marginBottom: 30 }}>
-          <p style={{ marginBottom: 9, color: "#195AB4", fontSize: 10, fontWeight: 700, letterSpacing: ".15em" }}>RUMO / ESTÚDIO EDITORIAL</p>
+          <p style={{ marginBottom: 9, color: "#195AB4", fontSize: 10, fontWeight: 700, letterSpacing: ".15em" }}>RUMO / EDITORIA CIENTÍFICA</p>
           <h1 style={{ marginBottom: 10, color: "#05132A", fontFamily: "Manrope, sans-serif", fontSize: "clamp(30px, 4vw, 42px)", letterSpacing: "-.04em" }}>Painel administrativo</h1>
-          <p style={{ color: "#687789", fontSize: 14, lineHeight: 1.8, maxWidth: 650 }}>Crie e edite artigos em blocos, adicione imagens, salve rascunhos e publique conteúdo no Rumo.</p>
+          <p style={{ color: "#687789", fontSize: 14, lineHeight: 1.8, maxWidth: 650 }}>Gerencie o conteúdo editorial existente e acompanhe as submissões científicas no fluxo de avaliação por pares.</p>
         </div>
         {params.erro && <p role="alert" style={{ padding: 14, borderLeft: "3px solid #b42318", background: "#fff0ee", color: "#8c1d18", fontSize: 13 }}>{errorMessages[params.erro] ?? "Ocorreu um erro ao salvar o artigo."}</p>}
         {params.sucesso && <p role="status" style={{ padding: 14, borderLeft: "3px solid #16804a", background: "#eaf8ef", color: "#17633a", fontSize: 13 }}>{params.sucesso === "criado" ? "Artigo salvo com sucesso." : params.sucesso === "excluido" ? "Artigo apagado definitivamente." : "Artigo atualizado com sucesso."}</p>}
