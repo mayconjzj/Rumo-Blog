@@ -115,13 +115,13 @@ export default function HomePage() {
               <svg viewBox="0 0 460 220" role="img" aria-label="Linha ilustrativa em trajetória ascendente">
                 <defs>
                   <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#e8a44a" stopOpacity=".28" />
-                    <stop offset="100%" stopColor="#e8a44a" stopOpacity="0" />
+                    <stop offset="0%" stopColor="#549CFF" stopOpacity=".28" />
+                    <stop offset="100%" stopColor="#549CFF" stopOpacity="0" />
                   </linearGradient>
                 </defs>
                 <path d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13 L460 220 L0 220 Z" fill="url(#areaFill)" />
-                <path d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13" fill="none" stroke="#e8a44a" strokeWidth="3" strokeLinecap="round" />
-                <circle cx="460" cy="13" r="5" fill="#e8a44a" />
+                <path d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13" fill="none" stroke="#549CFF" strokeWidth="3" strokeLinecap="round" />
+                <circle cx="460" cy="13" r="5" fill="#549CFF" />
               </svg>
               <div className="chart-footer"><span>ESTRATÉGIA</span><span>CONSISTÊNCIA</span><span>FUTURO</span></div>
             </div>
