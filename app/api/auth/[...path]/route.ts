@@ -4,7 +4,10 @@ const handlers = auth.handler();
 
 export const GET = handlers.GET;
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ path: string[] }> },
+) {
   const pathname = new URL(request.url).pathname;
   const blockedEndpoints = ["/request-password-reset", "/reset-password"];
 
@@ -15,5 +18,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return handlers.POST(request);
+  return handlers.POST(request, context);
 }
