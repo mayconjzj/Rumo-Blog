@@ -12,7 +12,9 @@ type ArticleContent = {
   title: string;
   excerpt: string;
   date: string;
+  datePublished: string;
   updatedAt?: string;
+  dateModified?: string;
   readTime: string;
   intro: string;
   sections: { heading: string; paragraphs: string[] }[];
@@ -49,7 +51,9 @@ const articleContents: ArticleContent[] = [
     title: "Investir bem começa por entender o que você possui",
     excerpt: "Uma abordagem prática para analisar empresas, compreender riscos e tomar decisões com mais clareza.",
     date: "20 OUT 2026",
+    datePublished: "2026-10-20",
     updatedAt: "21 OUT 2026",
+    dateModified: "2026-10-21",
     readTime: "6 min de leitura",
     sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Educação para investidores", url: "https://www.b3.com.br/pt_br/para-voce" }],
     intro: "Investir não é apenas escolher um ativo e esperar que seu preço suba. Uma decisão consistente começa com a compreensão do negócio, dos riscos envolvidos e do preço que se paga por seus resultados.",
@@ -78,7 +82,9 @@ const articleContents: ArticleContent[] = [
     title: "Juros compostos: o tempo como aliado",
     excerpt: "Entenda como aportes consistentes e horizonte de longo prazo podem transformar uma estratégia financeira.",
     date: "16 OUT 2026",
+    datePublished: "2026-10-16",
     updatedAt: "21 OUT 2026",
+    dateModified: "2026-10-21",
     readTime: "4 min de leitura",
     sources: [{ title: "Banco Central — Cidadania financeira", url: "https://www.bcb.gov.br/cidadaniafinanceira" }, { title: "Tesouro Direto", url: "https://www.tesourodireto.com.br/" }],
     intro: "Os juros compostos fazem com que os rendimentos acumulados também possam render. O efeito pode parecer discreto no início, mas ganha relevância à medida que o tempo passa.",
@@ -103,7 +109,9 @@ const articleContents: ArticleContent[] = [
     title: "Como ler os indicadores de uma empresa",
     excerpt: "ROE, margens e endividamento: o que esses números dizem — e o que deixam de dizer.",
     date: "12 OUT 2026",
+    datePublished: "2026-10-12",
     updatedAt: "21 OUT 2026",
+    dateModified: "2026-10-21",
     readTime: "7 min de leitura",
     sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Empresas listadas", url: "https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/consultas/mercado-a-vista/empresas-listadas/" }],
     intro: "Indicadores financeiros ajudam a resumir a situação de uma companhia. Seu valor real aparece quando são analisados em conjunto, ao longo do tempo e em relação às características do setor.",
@@ -128,16 +136,61 @@ export function generateStaticParams() {
   return articleContents.map((article) => ({ slug: article.slug }));
 }
 
+const siteUrl = "https://rumo-blog.vercel.app";
+
+function articleMetadata(title: string, description: string, slug: string, publishedTime?: string, modifiedTime?: string, image?: string): Metadata {
+  const url = `${siteUrl}/artigos/${encodeURIComponent(slug)}`;
+  const images = image ? [{ url: image, alt: title }] : undefined;
+  return {
+    title: `${title} | Rumo`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      locale: "pt_BR",
+      siteName: "Rumo",
+      url,
+      title: `${title} | Rumo`,
+      description,
+      publishedTime,
+      modifiedTime,
+      images,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: `${title} | Rumo`,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
+
+function jsonLd(data: Record<string, unknown>) {
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\\\u003c") }} />;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
-  if (post) return { title: post.title + " | Rumo", description: post.excerpt };
+  if (post) {
+    let coverImage: string | undefined;
+    try {
+      const parsed = JSON.parse(post.content);
+      if (parsed?.version === 1 && typeof parsed.coverImage === "string") coverImage = parsed.coverImage;
+    } catch {}
+    const published = post.published_at ?? post.created_at;
+    return articleMetadata(
+      post.title,
+      post.excerpt,
+      post.slug,
+      published ? new Date(published).toISOString() : undefined,
+      post.updated_at ? new Date(post.updated_at).toISOString() : undefined,
+      coverImage && /^https?:\\/\\//.test(coverImage) ? coverImage : undefined,
+    );
+  }
   const article = articleContents.find((item) => item.slug === slug);
-  if (!article) return { title: "Artigo não encontrado | Rumo" };
-  return {
-    title: `${article.title} | Rumo`,
-    description: article.excerpt,
-  };
+  if (!article) return { title: "Artigo não encontrado | Rumo", robots: { index: false, follow: false } };
+  return articleMetadata(article.title, article.excerpt, article.slug, article.datePublished, article.dateModified ?? article.datePublished);
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -154,8 +207,25 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const paragraphs = structured ? [] : post.content.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
     const contentSections = structured?.sections ?? [];
     const toc = contentSections.filter((section) => section.heading?.trim()).map((section) => ({ heading: section.heading!.trim(), id: sectionId(section.heading!.trim()) }));
+    const postPublished = post.published_at ?? post.created_at;
+    const postModified = post.updated_at ?? postPublished;
+    const postImage = structured?.coverImage && /^https?:\\/\\//.test(structured.coverImage) ? structured.coverImage : undefined;
+    const postJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: post.excerpt,
+      mainEntityOfPage: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
+      author: { "@type": "Organization", name: "Redação Rumo", url: siteUrl },
+      publisher: { "@type": "Organization", name: "Rumo", url: siteUrl },
+      datePublished: postPublished ? new Date(postPublished).toISOString() : undefined,
+      dateModified: postModified ? new Date(postModified).toISOString() : undefined,
+      image: postImage ? [postImage] : undefined,
+      inLanguage: "pt-BR",
+    };
     return (
       <main className="reading-page">
+        {jsonLd(postJsonLd)}
         <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
         <header className="site-header"><div className="container nav-wrap">
           <Link className="brand" href="/" aria-label="Rumo, página inicial"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
@@ -187,8 +257,22 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const article = articleContents.find((item) => item.slug === slug);
   if (!article) notFound();
 
+  const staticJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt,
+    mainEntityOfPage: `${siteUrl}/artigos/${encodeURIComponent(article.slug)}`,
+    author: { "@type": "Organization", name: "Redação Rumo", url: siteUrl },
+    publisher: { "@type": "Organization", name: "Rumo", url: siteUrl },
+    datePublished: article.datePublished,
+    dateModified: article.dateModified ?? article.datePublished,
+    inLanguage: "pt-BR",
+  };
+
   return (
     <main className="reading-page">
+      {jsonLd(staticJsonLd)}
       <div className="top-strip">
         <div className="container top-strip-inner">
           <span>INFORMAÇÃO PARA DECISÕES MELHORES</span>
