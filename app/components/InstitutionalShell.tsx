@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 export default function InstitutionalShell({ children }: { children: React.ReactNode }) {
