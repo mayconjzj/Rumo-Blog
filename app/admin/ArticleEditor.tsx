@@ -24,7 +24,7 @@ function parseContent(raw?: string): ArticleDraft {
   return { intro: raw, coverImage: "", sections: [{ id: "s1", heading: "", text: "", imageUrl: "", caption: "" }] };
 }
 
-export default function ArticleEditor({ action, submitLabel, initial }: Props) {
+export default function ArticleEditor({ action, initial }: Props) {
   const firstDraft = useMemo(() => parseContent(initial?.content), [initial?.content]);
   const [title, setTitle] = useState(initial?.title ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
