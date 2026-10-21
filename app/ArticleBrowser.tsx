@@ -9,6 +9,7 @@ export type ArticleSummary = {
   excerpt: string;
   date: string;
   readTime: string;
+  href?: string;
 };
 
 function normalize(value: string) {
