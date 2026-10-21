@@ -1,38 +1,10 @@
 import { getPublishedPosts } from "@/lib/blogs";
+import ArticleBrowser, { type ArticleSummary } from "./ArticleBrowser";
 
 export const dynamic = "force-dynamic";
 
-type Article = {
-  slug: string;
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  readTime: string;
-  featured?: boolean;
-};
-
 function ArrowIcon() {
   return <span aria-hidden="true" className="arrow">↗</span>;
-}
-
-function ArticleCard({ article }: { article: Article }) {
-  return (
-    <article className="article-card">
-      <div className="article-meta">
-        <span className="category">{article.category}</span>
-        <span>{article.readTime}</span>
-      </div>
-      <h3>{article.title}</h3>
-      <p>{article.excerpt}</p>
-      <div className="article-bottom">
-        <time>{article.date}</time>
-        <a href={`/artigos/${article.slug}`} aria-label={`Ler: ${article.title}`}>
-          Ler artigo <ArrowIcon />
-        </a>
-      </div>
-    </article>
-  );
 }
 
 function formatArticleDate(value: string | Date) {
@@ -44,19 +16,14 @@ function formatArticleDate(value: string | Date) {
 
 export default async function HomePage() {
   const publishedPosts = await getPublishedPosts();
-  const savedArticles: Article[] = publishedPosts.map((post, index) => ({
+  const articles: ArticleSummary[] = publishedPosts.map((post) => ({
     slug: post.slug,
     category: post.category,
     title: post.title,
     excerpt: post.excerpt,
     date: formatArticleDate(post.published_at ?? post.created_at),
-    readTime: Math.max(1, Math.ceil(post.content.trim().split(/\s+/).length / 220)) + " min de leitura",
-    featured: index === 0,
+    readTime: Math.max(1, Math.ceil(post.content.trim().split(/\\s+/).length / 220)) + " min de leitura",
   }));
-  // The database is the only source for article content. Never show frontend samples.
-  const articles = savedArticles;
-  const featured = articles[0];
-  const latest = articles.slice(1);
 
   return (
     <main>
@@ -126,58 +93,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {featured && (
-        <section className="featured-section" aria-labelledby="featured-title">
-          <div className="container featured-layout">
-            <div className="section-kicker">
-              <span className="section-number">01 / EM DESTAQUE</span>
-              <span className="kicker-rule" />
-            </div>
-            <article className="featured-article">
-              <div className="featured-tag">LEITURA RECOMENDADA</div>
-              <div className="featured-content">
-                <div>
-                  <span className="category">{featured.category}</span>
-                  <h2 id="featured-title">{featured.title}</h2>
-                  <p>{featured.excerpt}</p>
-                  <a className="text-link" href={`/artigos/${featured.slug}`}>Continuar lendo <span aria-hidden="true">→</span></a>
-                </div>
-                <div className="featured-aside">
-                  <span className="big-number">01</span>
-                  <span className="aside-rule" />
-                  <span className="aside-date">{featured.date}</span>
-                  <span className="aside-time">{featured.readTime}</span>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-      )}
-
       <section className="articles-section" id="artigos">
         <div className="container">
           <div className="section-heading">
             <div>
-              <span className="section-number">02 / CONTEÚDO</span>
-              <h2>Ideias para <em>seguir em frente.</em></h2>
+              <span className="section-number">01 / BIBLIOTECA</span>
+              <h2>Encontre sua próxima <em>leitura.</em></h2>
             </div>
-            <p>Conteúdo direto ao ponto para ampliar sua visão e apoiar suas decisões.</p>
+            <p>Pesquise por assunto ou explore as categorias para encontrar conteúdo relevante para suas decisões.</p>
           </div>
-          {articles.length === 0 ? (
-            <p className="empty-articles">Ainda não há artigos publicados. Volte em breve para conferir as novidades.</p>
-          ) : (
-            <>
-              <div className="article-grid">
-                {latest.map((article) => <ArticleCard key={article.title} article={article} />)}
-              </div>
-              {articles.length > 1 && (
-                <div className="all-articles">
-                  <span>CONHECIMENTO EM MOVIMENTO</span>
-                  <a href="#artigos">Ver todos os artigos <ArrowIcon /></a>
-                </div>
-              )}
-            </>
-          )}
+          <ArticleBrowser articles={articles} />
         </div>
       </section>
 
@@ -185,7 +110,7 @@ export default async function HomePage() {
         <div className="container about-inner">
           <div className="about-symbol">R<span>.</span></div>
           <div>
-            <span className="section-number">03 / NOSSO PROPÓSITO</span>
+            <span className="section-number">02 / NOSSO PROPÓSITO</span>
             <h2>Menos ruído. Mais <em>direção.</em></h2>
             <p>O Rumo é um espaço independente de conteúdo sobre investimentos, economia e educação financeira. Nosso objetivo é transformar temas complexos em conhecimento claro e útil.</p>
           </div>
