@@ -185,7 +185,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       post.slug,
       published ? new Date(published).toISOString() : undefined,
       post.updated_at ? new Date(post.updated_at).toISOString() : undefined,
-      coverImage && coverImage.startsWith("https://") || coverImage.startsWith("http://") ? coverImage : undefined,
+      coverImage && (coverImage.startsWith("https://") || coverImage.startsWith("http://")) ? coverImage : undefined,
     );
   }
   const article = articleContents.find((item) => item.slug === slug);
