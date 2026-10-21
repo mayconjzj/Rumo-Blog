@@ -43,7 +43,8 @@ export default async function HomePage() {
           <nav className="main-nav" aria-label="Navegação principal">
             <a className="nav-active" href="#inicio">Início</a>
             <a href="#artigos">Artigos</a>
-            <a href="#sobre">Sobre</a>
+            <a href="/sobre">Sobre</a>
+            <a href="/contato">Contato</a>
           </nav>
           <a className="admin-link" href="/login">Área administrativa <span aria-hidden="true">↗</span></a>
           <a className="mobile-admin" href="/login" aria-label="Área administrativa">↗</a>
@@ -61,7 +62,7 @@ export default async function HomePage() {
             </p>
             <div className="hero-actions">
               <a className="button button-primary" href="#artigos">Explorar artigos <ArrowIcon /></a>
-              <a className="text-link" href="#sobre">Conheça o Rumo <span aria-hidden="true">→</span></a>
+              <a className="text-link" href="/sobre">Conheça o Rumo <span aria-hidden="true">→</span></a>
             </div>
             <div className="hero-note">
               <span className="note-line" />
@@ -114,7 +115,7 @@ export default async function HomePage() {
             <h2>Menos ruído. Mais <em>direção.</em></h2>
             <p>O Rumo é um espaço independente de conteúdo sobre investimentos, economia e educação financeira. Nosso objetivo é transformar temas complexos em conhecimento claro e útil.</p>
           </div>
-          <a className="about-link" href="#inicio" aria-label="Voltar ao início">↑</a>
+          <a className="about-link" href="/sobre" aria-label="Conheça mais sobre o Rumo">→</a>
         </div>
       </section>
 
@@ -122,6 +123,7 @@ export default async function HomePage() {
         <div className="container footer-inner">
           <a className="brand brand-footer" href="/"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></a>
           <span>Informação para decisões melhores.</span>
+          <nav className="footer-links" aria-label="Links institucionais"><a href="/sobre">Sobre</a><a href="/contato">Contato</a><a href="/privacidade">Privacidade</a></nav>
           <span>© 2026 Rumo Blog</span>
         </div>
       </footer>
