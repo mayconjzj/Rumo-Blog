@@ -1,5 +1,7 @@
 import { getPublishedPosts } from "@/lib/blogs";
 
+export const dynamic = "force-dynamic";
+
 type Article = {
   slug: string;
   category: string;
