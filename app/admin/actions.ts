@@ -45,7 +45,7 @@ export async function createBlogAction(formData: FormData) {
   if (!url) redirect("/admin?erro=banco");
   const sql = neon(url);
   const result = await sql.query(
-    "INSERT INTO public.blog_posts (slug, title, category, excerpt, content, status, published_at) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $6 = 'published' THEN NOW() ELSE NULL END) ON CONFLICT (slug) DO NOTHING RETURNING id",
+    "INSERT INTO public.blog_posts (slug, title, category, excerpt, content, status, published_at) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $6::text = 'published' THEN NOW() ELSE NULL END) ON CONFLICT (slug) DO NOTHING RETURNING id",
     [slug, title, category, excerpt, content, status],
   );
 
@@ -65,7 +65,7 @@ export async function changeBlogStatusAction(formData: FormData) {
   if (!url) redirect("/admin?erro=banco");
   const sql = neon(url);
   await sql.query(
-    "UPDATE public.blog_posts SET status = $1, updated_at = NOW(), published_at = CASE WHEN $1 = 'published' THEN COALESCE(published_at, NOW()) ELSE NULL END WHERE id = $2",
+    "UPDATE public.blog_posts SET status = $1, updated_at = NOW(), published_at = CASE WHEN $1::text = 'published' THEN COALESCE(published_at, NOW()) ELSE NULL END WHERE id = $2",
     [status, id],
   );
   redirect("/admin?sucesso=atualizado");
