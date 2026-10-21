@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth/server";
+import { notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/server/admin-auth";
 import { getAdminPosts } from "@/lib/blogs";
 import ArticleEditor from "../../ArticleEditor";
 import { updateBlogAction } from "../../actions";
@@ -9,11 +9,7 @@ import LogoutButton from "../../LogoutButton";
 export const dynamic = "force-dynamic";
 
 export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { data: session } = await auth.getSession();
-  const userEmail = session?.user?.email?.trim().toLowerCase();
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!session?.user) redirect("/login");
-  if (!adminEmail || userEmail !== adminEmail) redirect("/");
+  const { email } = await requireAdmin();
   const { id: rawId } = await params;
   const id = Number(rawId);
   if (!Number.isSafeInteger(id) || id < 1) notFound();
@@ -25,7 +21,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
     <main style={{ minHeight: "100vh", background: "#f4f6f8", color: "#17283b" }}>
       <header style={{ background: "#05132A", color: "#fff", padding: "22px max(22px, calc((100vw - 1160px) / 2))", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
         <Link className="brand" href="/" style={{ color: "#fff" }}><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}><span style={{ color: "#c1ccda", fontSize: 12 }}>Conectado como {session.user.email}</span><LogoutButton /><Link href="/admin" style={{ fontSize: 12, color: "#87BAFF" }}>Voltar ao painel</Link></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}><span style={{ color: "#c1ccda", fontSize: 12 }}>Conectado como {email}</span><LogoutButton /><Link href="/admin" style={{ fontSize: 12, color: "#87BAFF" }}>Voltar ao painel</Link></div>
       </header>
       <div style={{ maxWidth: 850, margin: "0 auto", padding: "38px 22px 70px" }}>
         <p style={{ marginBottom: 8, color: "#195AB4", fontSize: 10, fontWeight: 800, letterSpacing: ".15em" }}>RUMO / ESTÚDIO EDITORIAL</p>
