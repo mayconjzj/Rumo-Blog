@@ -1,68 +1,99 @@
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
+import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import ResearchFilters, { type ResearchPaper } from "./ResearchFilters";
 
 export const dynamic = "force-dynamic";
-type PaperRow = Omit<ResearchPaper, "published_at"> & { published_at: string | Date };
+
+type PaperRow = Omit<ResearchPaper, "published_at"> & {
+  published_at: string | Date;
+};
+
 export const metadata = {
   title: "Pesquisas publicadas | Revista Rumo",
-  description: "Arquivo gratuito de artigos científicos multidisciplinares publicados pela Revista Rumo.",
+  description:
+    "Arquivo gratuito de artigos científicos multidisciplinares publicados pela Revista Rumo.",
 };
 
 export default async function ResearchArchive() {
   let papers: ResearchPaper[] = [];
   let unavailable = false;
+
   try {
-    if (!process.env.DATABASE_URL) throw new Error("db");
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is not configured");
+    }
+
     const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql.query(
-      `SELECT s.public_id, s.title, s.abstract, s.scientific_area, s.keywords, s.published_at,
-       COALESCE(string_agg(a.display_name, ', ' ORDER BY a.author_order), '') AS authors
-       FROM public.journal_submissions s
-       LEFT JOIN public.submission_authors a ON a.submission_id = s.id
+    const rows = (await sql.query(
+      `SELECT
+         s.public_id,
+         s.title,
+         s.abstract,
+         s.scientific_area,
+         s.keywords,
+         s.published_at,
+         COALESCE(
+           string_agg(a.display_name, ', ' ORDER BY a.author_order),
+           ''
+         ) AS authors
+       FROM public.journal_submissions AS s
+       LEFT JOIN public.submission_authors AS a
+         ON a.submission_id = s.id
        WHERE s.status = 'published'
        GROUP BY s.id
        ORDER BY s.published_at DESC`,
       [],
-    ) as unknown as PaperRow[];
+    )) as unknown as PaperRow[];
+
     papers = rows.map((paper) => ({
       ...paper,
-      published_at: paper.published_at instanceof Date ? paper.published_at.toISOString() : String(paper.published_at ?? ""),
+      published_at:
+        paper.published_at instanceof Date
+          ? paper.published_at.toISOString()
+          : String(paper.published_at ?? ""),
       keywords: Array.isArray(paper.keywords) ? paper.keywords : [],
     }));
   } catch {
     unavailable = true;
   }
 
-  return <main className="research-archive">
-    <header className="research-header">
-      <Link href="/" className="brand research-brand" aria-label="Rumo, página inicial">
-        <span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span>
-      </Link>
-      <nav className="research-desktop-links" aria-label="Navegação principal">
-        <Link href="/">Início</Link>
-        <Link href="/submeter">Submeter artigo ↗</Link>
-      </nav>
-      <details className="mobile-nav-menu research-mobile-menu">
-        <summary aria-label="Abrir menu de navegação"><span className="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span></summary>
-        <nav className="mobile-nav-panel" aria-label="Navegação móvel">
-          <Link href="/">Página inicial</Link>
-          <Link href="/pesquisas">Pesquisas publicadas</Link>
-          <Link href="/submeter">Submeter artigo</Link>
-        </nav>
-      </details>
-    </header>
-    <div className="research-archive-content">
-      <Link href="/" className="research-back-link">← Voltar para a página inicial</Link>
-      <p className="research-eyebrow">REVISTA RUMO / ARQUIVO CIENTÍFICO</p>
-      <h1>Pesquisas publicadas</h1>
-      <p className="research-intro">Leia e encontre artigos científicos aceitos e publicados pela revista. Pesquise por título, autor ou palavra-chave e filtre por área científica.</p>
-      {unavailable
-        ? <div className="research-empty"><h2>Arquivo temporariamente indisponível</h2><p>O arquivo científico estará disponível após a configuração do banco editorial.</p></div>
-        : papers.length === 0
-          ? <div className="research-empty"><h2>O primeiro número está em preparação</h2><p>Ainda não há manuscritos publicados. A revista recebe submissões gratuitas de todas as áreas científicas.</p><Link href="/submeter">Enviar uma pesquisa ↗</Link></div>
-          : <ResearchFilters papers={papers} />
-      }
-    </div>
-  </main>;
+  return (
+    <main className="research-archive">
+      <ResearchSiteHeader />
+
+      <div className="research-archive-content">
+        <Link href="/" className="research-back-link">
+          ← Voltar para a página inicial
+        </Link>
+        <p className="research-eyebrow">REVISTA RUMO / ARQUIVO CIENTÍFICO</p>
+        <h1>Pesquisas publicadas</h1>
+        <p className="research-intro">
+          Leia e encontre artigos científicos aceitos e publicados pela revista.
+          Pesquise por título, autor ou palavra-chave e filtre por área científica.
+        </p>
+
+        {unavailable ? (
+          <div className="research-empty">
+            <h2>Arquivo temporariamente indisponível</h2>
+            <p>
+              O arquivo científico estará disponível após a configuração do banco
+              editorial.
+            </p>
+          </div>
+        ) : papers.length === 0 ? (
+          <div className="research-empty">
+            <h2>O primeiro número está em preparação</h2>
+            <p>
+              Ainda não há manuscritos publicados. A revista recebe submissões
+              gratuitas de todas as áreas científicas.
+            </p>
+            <Link href="/submeter">Enviar uma pesquisa ↗</Link>
+          </div>
+        ) : (
+          <ResearchFilters papers={papers} />
+        )}
+      </div>
+    </main>
+  );
 }
