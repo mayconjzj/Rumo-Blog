@@ -1,31 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { useActionState, useState } from "react";
+import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, formAction, pending] = useActionState(loginAction, { error: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState("");
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage("");
-
-    const { error } = await authClient.signIn.email({ email, password });
-
-    if (error) {
-      setMessage("Não foi possível entrar. Confira o e-mail e a senha.");
-      return;
-    }
-
-    router.replace("/admin");
-    router.refresh();
-  }
 
   return (
     <main className="login-page">
@@ -58,7 +39,7 @@ export default function AdminLoginPage() {
             <h2 id="login-title">Bem-vindo de volta.</h2>
             <p className="login-subtitle">Entre com suas credenciais administrativas para continuar.</p>
 
-            <form className="login-form" onSubmit={handleSubmit}>
+            <form className="login-form" action={formAction}>
               <label htmlFor="admin-email">E-mail</label>
               <input
                 id="admin-email"
@@ -66,8 +47,6 @@ export default function AdminLoginPage() {
                 type="email"
                 autoComplete="username"
                 placeholder="voce@exemplo.com"
-                value={email}
-                onChange={(event) => { setEmail(event.target.value); setMessage(""); }}
                 required
               />
 
@@ -81,8 +60,6 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="Digite sua senha"
-                  value={password}
-                  onChange={(event) => { setPassword(event.target.value); setMessage(""); }}
                   required
                 />
                 <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}>
@@ -90,8 +67,8 @@ export default function AdminLoginPage() {
                 </button>
               </div>
 
-              <button className="login-submit" type="submit">Entrar no painel <span aria-hidden="true">↗</span></button>
-              {message && <p className="login-message" role="status">{message}</p>}
+              <button className="login-submit" type="submit" disabled={pending}>{pending ? "Entrando..." : "Entrar no painel"} <span aria-hidden="true">↗</span></button>
+              {state.error && <p className="login-message" role="status">{state.error}</p>}
             </form>
 
             <div className="login-security-note">
