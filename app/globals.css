@@ -379,3 +379,16 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   .category-filters { gap: 7px; margin-bottom: 19px; }
   .category-filter { padding: 9px 11px; }
 }
+
+
+/* Rounded corners for interactive buttons */
+button,
+.button,
+[role="button"],
+.comment-form-footer button,
+.login-submit,
+.category-filter,
+.search-clear,
+.clear-filters-button {
+  border-radius: 8px;
+}
