@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import PageViewTracker from "./components/PageViewTracker";
 import "./globals.css";
 
 const adsensePublisherId = "ca-pub-3534989499820933";
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
+        <PageViewTracker />
         {children}
         <Script
           id="google-adsense"
