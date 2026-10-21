@@ -84,8 +84,9 @@ export default async function HomePage() {
     readTime: Math.max(1, Math.ceil(post.content.trim().split(/\s+/).length / 220)) + " min de leitura",
     featured: index === 0,
   }));
-  const savedSlugs = new Set(savedArticles.map((article) => article.slug));
-  const articles = [...savedArticles, ...fallbackArticles.filter((article) => !savedSlugs.has(article.slug))];
+  // Use published database posts as the source of truth once the admin has published any.
+  // Keep sample articles only for the initial empty state.
+  const articles = savedArticles.length > 0 ? savedArticles : fallbackArticles;
   const featured = articles.find((article) => article.featured) ?? articles[0];
   const latest = articles.filter((article) => !article.featured);
 
