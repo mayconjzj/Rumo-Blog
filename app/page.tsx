@@ -12,37 +12,6 @@ type Article = {
   featured?: boolean;
 };
 
-const fallbackArticles: Article[] = [
-  {
-    slug: "investir-bem-comeca-por-entender",
-    category: "INVESTIMENTOS",
-    title: "Investir bem começa por entender o que você possui",
-    excerpt:
-      "Uma abordagem prática para analisar empresas, compreender riscos e tomar decisões com mais clareza.",
-    date: "20 OUT 2026",
-    readTime: "6 min de leitura",
-    featured: true,
-  },
-  {
-    slug: "juros-compostos-o-tempo-como-aliado",
-    category: "EDUCAÇÃO FINANCEIRA",
-    title: "Juros compostos: o tempo como aliado",
-    excerpt:
-      "Entenda como aportes consistentes e horizonte de longo prazo podem transformar uma estratégia financeira.",
-    date: "16 OUT 2026",
-    readTime: "4 min de leitura",
-  },
-  {
-    slug: "como-ler-os-indicadores-de-uma-empresa",
-    category: "MERCADO",
-    title: "Como ler os indicadores de uma empresa",
-    excerpt:
-      "ROE, margens e endividamento: o que esses números dizem — e o que deixam de dizer.",
-    date: "12 OUT 2026",
-    readTime: "7 min de leitura",
-  },
-];
-
 function ArrowIcon() {
   return <span aria-hidden="true" className="arrow">↗</span>;
 }
@@ -84,11 +53,10 @@ export default async function HomePage() {
     readTime: Math.max(1, Math.ceil(post.content.trim().split(/\s+/).length / 220)) + " min de leitura",
     featured: index === 0,
   }));
-  // Use published database posts as the source of truth once the admin has published any.
-  // Keep sample articles only for the initial empty state.
-  const articles = savedArticles.length > 0 ? savedArticles : fallbackArticles;
-  const featured = articles.find((article) => article.featured) ?? articles[0];
-  const latest = articles.filter((article) => !article.featured);
+  // The database is the only source for article content. Never show frontend samples.
+  const articles = savedArticles;
+  const featured = articles[0];
+  const latest = articles.slice(1);
 
   return (
     <main>
@@ -158,31 +126,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="featured-section" aria-labelledby="featured-title">
-        <div className="container featured-layout">
-          <div className="section-kicker">
-            <span className="section-number">01 / EM DESTAQUE</span>
-            <span className="kicker-rule" />
-          </div>
-          <article className="featured-article">
-            <div className="featured-tag">LEITURA RECOMENDADA</div>
-            <div className="featured-content">
-              <div>
-                <span className="category">{featured.category}</span>
-                <h2 id="featured-title">{featured.title}</h2>
-                <p>{featured.excerpt}</p>
-                <a className="text-link" href={`/artigos/${featured.slug}`}>Continuar lendo <span aria-hidden="true">→</span></a>
-              </div>
-              <div className="featured-aside">
-                <span className="big-number">01</span>
-                <span className="aside-rule" />
-                <span className="aside-date">{featured.date}</span>
-                <span className="aside-time">{featured.readTime}</span>
-              </div>
+      {featured && (
+        <section className="featured-section" aria-labelledby="featured-title">
+          <div className="container featured-layout">
+            <div className="section-kicker">
+              <span className="section-number">01 / EM DESTAQUE</span>
+              <span className="kicker-rule" />
             </div>
-          </article>
-        </div>
-      </section>
+            <article className="featured-article">
+              <div className="featured-tag">LEITURA RECOMENDADA</div>
+              <div className="featured-content">
+                <div>
+                  <span className="category">{featured.category}</span>
+                  <h2 id="featured-title">{featured.title}</h2>
+                  <p>{featured.excerpt}</p>
+                  <a className="text-link" href={`/artigos/${featured.slug}`}>Continuar lendo <span aria-hidden="true">→</span></a>
+                </div>
+                <div className="featured-aside">
+                  <span className="big-number">01</span>
+                  <span className="aside-rule" />
+                  <span className="aside-date">{featured.date}</span>
+                  <span className="aside-time">{featured.readTime}</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
 
       <section className="articles-section" id="artigos">
         <div className="container">
@@ -193,13 +163,21 @@ export default async function HomePage() {
             </div>
             <p>Conteúdo direto ao ponto para ampliar sua visão e apoiar suas decisões.</p>
           </div>
-          <div className="article-grid">
-            {latest.map((article) => <ArticleCard key={article.title} article={article} />)}
-          </div>
-          <div className="all-articles">
-            <span>CONHECIMENTO EM MOVIMENTO</span>
-            <a href="#artigos">Ver todos os artigos <ArrowIcon /></a>
-          </div>
+          {articles.length === 0 ? (
+            <p className="empty-articles">Ainda não há artigos publicados. Volte em breve para conferir as novidades.</p>
+          ) : (
+            <>
+              <div className="article-grid">
+                {latest.map((article) => <ArticleCard key={article.title} article={article} />)}
+              </div>
+              {articles.length > 1 && (
+                <div className="all-articles">
+                  <span>CONHECIMENTO EM MOVIMENTO</span>
+                  <a href="#artigos">Ver todos os artigos <ArrowIcon /></a>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 
