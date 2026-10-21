@@ -9,7 +9,7 @@ export async function updateSubmissionAction(formData:FormData){
  const {email}=await requireAdmin(),id=Number(formData.get("id")),status=String(formData.get("status")??""),note=String(formData.get("note")??"").trim().slice(0,2000);
  if(!Number.isSafeInteger(id)||id<1||!allowed.has(status))fail("acao");if(!process.env.DATABASE_URL)fail("banco");
  const sql=neon(process.env.DATABASE_URL);let previous:string;
- try{const rows=await sql.query("SELECT status FROM public.journal_submissions WHERE id=$1",[id]);if(!rows.length)fail("acao");previous=String((rows[0] as {status:string}).status);}catch{fail("banco");}
+ try{const rows=await sql.query("SELECT status FROM public.journal_submissions WHERE id=$1",[id]);previous=rows.length?String((rows[0] as {status:string}).status):"";}catch{fail("banco");}if(!previous)fail("acao");
  if(status==="published"&&previous!=="accepted")fail("precisa_aceite");
  try{
   await sql.query("UPDATE public.journal_submissions SET status=$1,editor_account_id=$2,updated_at=NOW(),published_at=CASE WHEN $1='published' THEN COALESCE(published_at,NOW()) ELSE published_at END WHERE id=$3",[status,email,id]);
