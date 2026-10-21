@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { siteUrl } from "@/lib/site";
 
+import { neon } from "@neondatabase/serverless";
+import ResearchSiteHeader from "../components/ResearchSiteHeader";
+import SiteFooter from "../components/SiteFooter";
+import ResearchFilters, { type ResearchPaper } from "./ResearchFilters";
+
 export const metadata: Metadata = {
   title: "Arquivo de pesquisas científicas",
   description: "Consulte pesquisas científicas publicadas na Revista Rumo, com acesso gratuito aos resumos, palavras-chave, referências e PDFs disponíveis.",
@@ -15,10 +20,6 @@ export const metadata: Metadata = {
     locale: "pt_BR",
   },
 };
-import { neon } from "@neondatabase/serverless";
-import ResearchSiteHeader from "../components/ResearchSiteHeader";
-import SiteFooter from "../components/SiteFooter";
-import ResearchFilters, { type ResearchPaper } from "./ResearchFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -26,11 +27,6 @@ type PaperRow = Omit<ResearchPaper, "published_at"> & {
   published_at: string | Date;
 };
 
-export const metadata = {
-  title: "Pesquisas publicadas | Revista Rumo",
-  description:
-    "Arquivo gratuito de artigos científicos multidisciplinares publicados pela Revista Rumo.",
-};
 
 export default async function ResearchArchive() {
   let papers: ResearchPaper[] = [];
