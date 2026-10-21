@@ -12,6 +12,7 @@ type ArticleContent = {
   title: string;
   excerpt: string;
   date: string;
+  updatedAt?: string;
   readTime: string;
   intro: string;
   sections: { heading: string; paragraphs: string[] }[];
@@ -48,6 +49,7 @@ const articleContents: ArticleContent[] = [
     title: "Investir bem começa por entender o que você possui",
     excerpt: "Uma abordagem prática para analisar empresas, compreender riscos e tomar decisões com mais clareza.",
     date: "20 OUT 2026",
+    updatedAt: "21 OUT 2026",
     readTime: "6 min de leitura",
     sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Educação para investidores", url: "https://www.b3.com.br/pt_br/para-voce" }],
     intro: "Investir não é apenas escolher um ativo e esperar que seu preço suba. Uma decisão consistente começa com a compreensão do negócio, dos riscos envolvidos e do preço que se paga por seus resultados.",
@@ -76,6 +78,7 @@ const articleContents: ArticleContent[] = [
     title: "Juros compostos: o tempo como aliado",
     excerpt: "Entenda como aportes consistentes e horizonte de longo prazo podem transformar uma estratégia financeira.",
     date: "16 OUT 2026",
+    updatedAt: "21 OUT 2026",
     readTime: "4 min de leitura",
     sources: [{ title: "Banco Central — Cidadania financeira", url: "https://www.bcb.gov.br/cidadaniafinanceira" }, { title: "Tesouro Direto", url: "https://www.tesourodireto.com.br/" }],
     intro: "Os juros compostos fazem com que os rendimentos acumulados também possam render. O efeito pode parecer discreto no início, mas ganha relevância à medida que o tempo passa.",
@@ -100,6 +103,7 @@ const articleContents: ArticleContent[] = [
     title: "Como ler os indicadores de uma empresa",
     excerpt: "ROE, margens e endividamento: o que esses números dizem — e o que deixam de dizer.",
     date: "12 OUT 2026",
+    updatedAt: "21 OUT 2026",
     readTime: "7 min de leitura",
     sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Empresas listadas", url: "https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/consultas/mercado-a-vista/empresas-listadas/" }],
     intro: "Indicadores financeiros ajudam a resumir a situação de uma companhia. Seu valor real aparece quando são analisados em conjunto, ao longo do tempo e em relação às características do setor.",
@@ -219,7 +223,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <div className="author-mark">R</div>
             <div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div>
             <span className="byline-divider" />
-            <time>{article.date}</time>
+            <span>Publicado em {article.date}</span>
+            {article.updatedAt && <><span className="byline-divider" /><span className="article-updated">Atualizado em {article.updatedAt}</span></>}
             <span className="byline-divider" />
             <span>{article.readTime}</span>
           </div>
@@ -245,6 +250,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </section>
           ))}
+          <ArticleFooterExtras
+            sources={article.sources ?? []}
+            related={articleContents
+              .filter((item) => item.slug !== article.slug)
+              .sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category))
+              .slice(0, 3)
+              .map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))}
+          />
           <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div>
           <div className="article-share-row">
             <span>Este conteúdo foi útil?</span>
