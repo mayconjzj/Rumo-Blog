@@ -98,7 +98,6 @@ export default function AdminLoginPage() {
               <span className="security-symbol" aria-hidden="true">i</span>
               <p>Área destinada somente a pessoas autorizadas. Nunca compartilhe suas credenciais.</p>
             </div>
-            <Link className="login-home-link" href="/primeiro-acesso">Primeiro acesso? Criar minha conta</Link>
             <Link className="login-home-link" href="/">← Retornar à página inicial</Link>
           </div>
         </section>
