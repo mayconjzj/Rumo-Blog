@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "../../components/CommentsSection";
-import { getPublishedPostBySlug } from "@/lib/blogs";
+import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blogs";
+
+type ArticleSource = { title: string; url: string };
 
 type ArticleContent = {
   slug: string;
@@ -13,7 +15,31 @@ type ArticleContent = {
   readTime: string;
   intro: string;
   sections: { heading: string; paragraphs: string[] }[];
+  sources?: ArticleSource[];
 };
+
+function sectionId(heading: string) {
+  return heading.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function formatDate(value: string | Date | null | undefined) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "UTC" }).format(date);
+}
+
+function ArticleExtras({ toc }: { toc: { heading: string; id: string }[] }) {
+  if (!toc.length) return null;
+  return <nav className="article-toc" aria-label="Sumário deste artigo"><p>SUMÁRIO DO ARTIGO</p><ol>{toc.map((item) => <li key={item.id}><a href={`#${item.id}`}>{item.heading}</a></li>)}</ol></nav>;
+}
+
+function ArticleFooterExtras({ sources, related }: { sources: ArticleSource[]; related: { slug: string; title: string; category: string; excerpt: string }[] }) {
+  return <>
+    {sources.length > 0 && <section className="article-sources" aria-labelledby="article-sources-title"><span className="article-kicker">LEITURA E REFERÊNCIAS</span><h2 id="article-sources-title">Fontes consultadas</h2><ul>{sources.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} <span aria-hidden="true">↗</span></a></li>)}</ul></section>}
+    {related.length > 0 && <section className="related-articles" aria-labelledby="related-articles-title"><span className="article-kicker">CONTINUE EXPLORANDO</span><h2 id="related-articles-title">Artigos relacionados</h2><div className="related-article-grid">{related.map((item) => <article className="related-article-card" key={item.slug}><span className="category">{item.category}</span><h3><Link href={`/artigos/${item.slug}`}>{item.title}</Link></h3><p>{item.excerpt}</p><Link className="related-read-link" href={`/artigos/${item.slug}`}>Ler artigo <span aria-hidden="true">↗</span></Link></article>)}</div></section>}
+  </>;
+}
 
 const articleContents: ArticleContent[] = [
   {
@@ -23,6 +49,7 @@ const articleContents: ArticleContent[] = [
     excerpt: "Uma abordagem prática para analisar empresas, compreender riscos e tomar decisões com mais clareza.",
     date: "20 OUT 2026",
     readTime: "6 min de leitura",
+    sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Educação para investidores", url: "https://www.b3.com.br/pt_br/para-voce" }],
     intro: "Investir não é apenas escolher um ativo e esperar que seu preço suba. Uma decisão consistente começa com a compreensão do negócio, dos riscos envolvidos e do preço que se paga por seus resultados.",
     sections: [
       { heading: "Comece pelo negócio", paragraphs: [
@@ -50,6 +77,7 @@ const articleContents: ArticleContent[] = [
     excerpt: "Entenda como aportes consistentes e horizonte de longo prazo podem transformar uma estratégia financeira.",
     date: "16 OUT 2026",
     readTime: "4 min de leitura",
+    sources: [{ title: "Banco Central — Cidadania financeira", url: "https://www.bcb.gov.br/cidadaniafinanceira" }, { title: "Tesouro Direto", url: "https://www.tesourodireto.com.br/" }],
     intro: "Os juros compostos fazem com que os rendimentos acumulados também possam render. O efeito pode parecer discreto no início, mas ganha relevância à medida que o tempo passa.",
     sections: [
       { heading: "O efeito dos rendimentos sobre rendimentos", paragraphs: [
@@ -73,6 +101,7 @@ const articleContents: ArticleContent[] = [
     excerpt: "ROE, margens e endividamento: o que esses números dizem — e o que deixam de dizer.",
     date: "12 OUT 2026",
     readTime: "7 min de leitura",
+    sources: [{ title: "CVM — Portal do Investidor", url: "https://www.gov.br/investidor/pt-br" }, { title: "B3 — Empresas listadas", url: "https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/consultas/mercado-a-vista/empresas-listadas/" }],
     intro: "Indicadores financeiros ajudam a resumir a situação de uma companhia. Seu valor real aparece quando são analisados em conjunto, ao longo do tempo e em relação às características do setor.",
     sections: [
       { heading: "Retorno sobre o patrimônio (ROE)", paragraphs: [
@@ -111,13 +140,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
   if (post) {
-    let structured: { version?: number; intro?: string; coverImage?: string; sections?: { heading?: string; text?: string; imageUrl?: string; caption?: string }[] } | null = null;
+    const allPosts = await getPublishedPosts();
+    const related = allPosts.filter((item) => item.slug !== post.slug).sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category)).slice(0, 3);
+    let structured: { version?: number; intro?: string; coverImage?: string; sources?: ArticleSource[]; sections?: { heading?: string; text?: string; imageUrl?: string; caption?: string }[] } | null = null;
     try {
       const parsed = JSON.parse(post.content);
       if (parsed?.version === 1 && Array.isArray(parsed.sections)) structured = parsed;
     } catch {}
     const paragraphs = structured ? [] : post.content.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
     const contentSections = structured?.sections ?? [];
+    const toc = contentSections.filter((section) => section.heading?.trim()).map((section) => ({ heading: section.heading!.trim(), id: sectionId(section.heading!.trim()) }));
     return (
       <main className="reading-page">
         <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
@@ -127,18 +159,21 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <Link className="admin-link" href="/login">Área administrativa <span aria-hidden="true">↗</span></Link><Link className="mobile-admin" href="/login" aria-label="Área administrativa">↗</Link>
         </div></header>
         <div className="article-breadcrumb container"><Link href="/">Início</Link><span>/</span><Link href="/#artigos">Artigos</Link><span>/</span><span>{post.category}</span></div>
-        <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><time>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(post.published_at ?? post.created_at))}</time></div></header>
+        <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><span>Publicado em {formatDate(post.published_at ?? post.created_at)}</span>{formatDate(post.updated_at) && formatDate(post.updated_at) !== formatDate(post.published_at ?? post.created_at) && <><span className="byline-divider" /><span className="article-updated">Atualizado em {formatDate(post.updated_at)}</span></>}</div></header>
           {structured?.coverImage ? <img src={structured.coverImage} alt={post.title} style={{ display: "block", width: "min(1000px, calc(100% - 48px))", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
           <div className="reading-body">
             {structured?.intro && <p className="reading-intro" style={{ whiteSpace: "pre-line" }}>{structured.intro}</p>}
+            <ArticleExtras toc={toc} />
             {structured ? contentSections.map((section, index) => (
-              <section key={index}>
+              <section key={index} id={section.heading?.trim() ? sectionId(section.heading.trim()) : undefined}>
                 {section.heading && <h2>{section.heading}</h2>}
                 {section.text?.split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex}>{paragraph.trim()}</p>)}
                 {section.imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={section.imageUrl} alt={section.caption || section.heading || post.title} style={{ display: "block", width: "100%", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
               </section>
             )) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
-            <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
+            <ArticleFooterExtras sources={Array.isArray(structured?.sources) ? structured.sources.filter((source) => source?.title && /^https:\/\//.test(source.url)) : []} related={related.map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+            <ArticleFooterExtras sources={article.sources ?? []} related={articleContents.filter((item) => item.slug !== article.slug).sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category)).slice(0, 3).map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
+          <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
         </article>
         <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
         <section className="reading-back"><div className="container reading-back-inner"><div><span className="section-number">CONTINUE EXPLORANDO</span><h2>Mais ideias para <em>seguir em frente.</em></h2></div><Link className="button button-primary" href="/#artigos">Voltar aos artigos <span aria-hidden="true">↗</span></Link></div></section>
@@ -204,8 +239,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         <div className="reading-body">
           <p className="reading-intro">{article.intro}</p>
+          <ArticleExtras toc={article.sections.map((section) => ({ heading: section.heading, id: sectionId(section.heading) }))} />
           {article.sections.map((section) => (
-            <section key={section.heading}>
+            <section key={section.heading} id={sectionId(section.heading)}>
               <h2>{section.heading}</h2>
               {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </section>
