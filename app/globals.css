@@ -452,3 +452,26 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   .admin-home-cards { grid-template-columns: 1fr; }
   .admin-home-card { padding: 21px; }
 }
+
+
+/* Published scientific research on the homepage */
+.published-research-section { padding-block: 70px 74px; background: #fff; }
+.published-research-section .section-heading { margin-bottom: 28px; }
+.published-research-section .section-heading .section-number { color: #195AB4; }
+.published-research-section .section-heading h2 { margin: 15px 0 0; color: #05132A; font-family: Manrope, sans-serif; font-size: clamp(27px, 3.4vw, 39px); font-weight: 600; letter-spacing: -.045em; }
+.published-research-section .section-heading h2 em { color: #195AB4; font-style: normal; }
+.published-research-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.published-research-card { display: flex; flex-direction: column; min-width: 0; padding: 22px; border: 1px solid #e1e6eb; background: #fff; }
+.published-research-meta { margin-bottom: 13px; color: #195AB4; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.published-research-card h3 { margin-bottom: 10px; color: #05132A; font-family: Manrope,sans-serif; font-size: 19px; line-height: 1.4; }
+.published-research-card h3 a:hover { color: #195AB4; }
+.published-research-authors { margin-bottom: 10px; color: #687789; font-size: 11px; }
+.published-research-abstract { margin-bottom: 20px; color: #526274; font-size: 12px; line-height: 1.8; }
+.published-research-link { margin-top: auto; color: #195AB4; font-size: 11px; font-weight: 800; }
+.published-research-empty { padding: 30px; border: 1px dashed #cbd6e0; background: #f8fafc; }
+.published-research-empty h3 { margin-bottom: 8px; color: #05132A; font-size: 19px; }
+.published-research-empty p { max-width: 680px; margin-bottom: 12px; color: #687789; font-size: 12px; line-height: 1.8; }
+.published-research-empty a,.published-research-footer a { color: #195AB4; font-size: 12px; font-weight: 800; }
+.published-research-footer { display: flex; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid #e1e6eb; }
+@media(max-width:800px){.published-research-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.published-research-section{padding-block:48px}.published-research-grid{grid-template-columns:1fr}.published-research-card{padding:19px}.published-research-empty{padding:22px}}
