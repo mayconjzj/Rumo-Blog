@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { BlogPost } from "@/lib/blogs";
+import type { BlogPost } from "@/lib/blog-types";
 import {
   DatabaseNotConfiguredError,
   NeonBlogRepository,
