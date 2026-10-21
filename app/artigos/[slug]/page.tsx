@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentsSection from "../../components/CommentsSection";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blogs";
+import { siteUrl } from "@/lib/site";
 
 type ArticleSource = { title: string; url: string };
 
@@ -136,13 +137,12 @@ export function generateStaticParams() {
   return articleContents.map((article) => ({ slug: article.slug }));
 }
 
-const siteUrl = "https://rumo-blog.vercel.app";
 
 function articleMetadata(title: string, description: string, slug: string, publishedTime?: string, modifiedTime?: string, image?: string): Metadata {
   const url = `${siteUrl}/artigos/${encodeURIComponent(slug)}`;
   const images = image ? [{ url: image, alt: title }] : undefined;
   return {
-    title: `${title} | Rumo`,
+    title,
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -189,7 +189,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     );
   }
   const article = articleContents.find((item) => item.slug === slug);
-  if (!article) return { title: "Artigo não encontrado | Rumo", robots: { index: false, follow: false } };
+  if (!article) return { title: "Artigo não encontrado", robots: { index: false, follow: false } };
   return articleMetadata(article.title, article.excerpt, article.slug, article.datePublished, article.dateModified ?? article.datePublished);
 }
 

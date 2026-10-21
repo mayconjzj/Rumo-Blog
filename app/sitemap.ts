@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getPublishedPosts } from "@/lib/blogs";
 import { neon } from "@neondatabase/serverless";
+import { getPublishedPosts } from "@/lib/blogs";
+import { siteUrl } from "@/lib/site";
 
-const siteUrl = "https://rumo-blog.vercel.app";
-
-// Rebuild the sitemap on each request so database changes appear without a redeploy.
 export const dynamic = "force-dynamic";
+
+type SitemapEntry = MetadataRoute.Sitemap[number];
 
 function toDate(value: string | Date | null | undefined): Date | undefined {
   if (!value) return undefined;
@@ -14,20 +14,39 @@ function toDate(value: string | Date | null | undefined): Date | undefined {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const entries: MetadataRoute.Sitemap = [
-    {
-      url: siteUrl,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-  ];
+  const entries = new Map<string, SitemapEntry>();
+  const add = (entry: SitemapEntry) => entries.set(entry.url, entry);
 
-  // The database is the source of truth: only posts marked as published
-  // by the repository are eligible for inclusion in the sitemap.
+  add({ url: siteUrl, changeFrequency: "weekly", priority: 1 });
+  add({ url: `${siteUrl}/pesquisas`, changeFrequency: "weekly", priority: 0.8 });
+  add({ url: `${siteUrl}/submeter`, changeFrequency: "monthly", priority: 0.6 });
+
+  for (const path of [
+    "/politica-editorial",
+    "/avaliacao-por-pares",
+    "/etica-publicacao",
+    "/privacidade",
+  ]) {
+    add({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: 0.4 });
+  }
+
+  // Editorial fallback pages are public even when no matching database post exists.
+  for (const slug of [
+    "investir-bem-comeca-por-entender",
+    "juros-compostos-o-tempo-como-aliado",
+    "como-ler-os-indicadores-de-uma-empresa",
+  ]) {
+    add({
+      url: `${siteUrl}/artigos/${encodeURIComponent(slug)}`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
   try {
     const posts = await getPublishedPosts();
     for (const post of posts) {
-      entries.push({
+      add({
         url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
         lastModified:
           toDate(post.updated_at) ??
@@ -38,18 +57,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
   } catch (error) {
-    // If the database is temporarily unavailable, expose only the homepage.
     console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
   }
 
   try {
     if (process.env.DATABASE_URL) {
       const sql = neon(process.env.DATABASE_URL);
-      const papers = await sql.query("SELECT public_id, published_at FROM public.journal_submissions WHERE status=$1", ["published"]);
-      for (const paper of papers as unknown as { public_id: string; published_at: string | Date }[]) entries.push({ url: `${siteUrl}/pesquisas/${paper.public_id}`, lastModified: toDate(paper.published_at), changeFrequency: "monthly", priority: 0.8 });
+      const papers = await sql.query(
+        `SELECT public_id, published_at
+         FROM public.journal_submissions
+         WHERE status = $1
+           AND NULLIF(BTRIM(title), '') IS NOT NULL`,
+        ["published"],
+      );
+
+      for (const paper of papers as unknown as {
+        public_id: string;
+        published_at: string | Date | null;
+      }[]) {
+        if (!paper.public_id) continue;
+        add({
+          url: `${siteUrl}/pesquisas/${encodeURIComponent(paper.public_id)}`,
+          lastModified: toDate(paper.published_at),
+          changeFrequency: "monthly",
+          priority: 0.8,
+        });
+      }
     }
-  } catch (error) { console.error("Não foi possível carregar publicações científicas para o sitemap.", error); }
-  entries.push({ url: `${siteUrl}/pesquisas`, changeFrequency: "weekly", priority: 0.8 });
-  for (const path of ["/submeter", "/politica-editorial", "/avaliacao-por-pares", "/etica-publicacao", "/privacidade"]) entries.push({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: path === "/submeter" ? 0.6 : 0.4 });
-  return entries;
+  } catch (error) {
+    console.error(
+      "Não foi possível carregar pesquisas publicadas para o sitemap.",
+      error,
+    );
+  }
+
+  return Array.from(entries.values());
 }

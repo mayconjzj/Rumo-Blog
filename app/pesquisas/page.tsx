@@ -1,4 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { siteUrl } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Arquivo de pesquisas científicas",
+  description: "Consulte pesquisas científicas publicadas na Revista Rumo, com acesso gratuito aos resumos, palavras-chave, referências e PDFs disponíveis.",
+  alternates: { canonical: `${siteUrl}/pesquisas` },
+  openGraph: {
+    type: "website",
+    title: "Arquivo de pesquisas científicas | Revista Rumo",
+    description: "Pesquisas científicas publicadas com acesso gratuito na Revista Rumo.",
+    url: `${siteUrl}/pesquisas`,
+    siteName: "Revista Rumo",
+    locale: "pt_BR",
+  },
+};
 import { neon } from "@neondatabase/serverless";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
