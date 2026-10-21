@@ -1,4 +1,5 @@
 type Article = {
+  slug: string;
   category: string;
   title: string;
   excerpt: string;
@@ -9,6 +10,7 @@ type Article = {
 
 const articles: Article[] = [
   {
+    slug: "investir-bem-comeca-por-entender",
     category: "INVESTIMENTOS",
     title: "Investir bem começa por entender o que você possui",
     excerpt:
@@ -18,6 +20,7 @@ const articles: Article[] = [
     featured: true,
   },
   {
+    slug: "juros-compostos-o-tempo-como-aliado",
     category: "EDUCAÇÃO FINANCEIRA",
     title: "Juros compostos: o tempo como aliado",
     excerpt:
@@ -26,6 +29,7 @@ const articles: Article[] = [
     readTime: "4 min de leitura",
   },
   {
+    slug: "como-ler-os-indicadores-de-uma-empresa",
     category: "MERCADO",
     title: "Como ler os indicadores de uma empresa",
     excerpt:
@@ -50,7 +54,7 @@ function ArticleCard({ article }: { article: Article }) {
       <p>{article.excerpt}</p>
       <div className="article-bottom">
         <time>{article.date}</time>
-        <a href="#artigos" aria-label={`Ler: ${article.title}`}>
+        <a href={`/artigos/${article.slug}`} aria-label={`Ler: ${article.title}`}>
           Ler artigo <ArrowIcon />
         </a>
       </div>
@@ -143,7 +147,7 @@ export default function HomePage() {
                 <span className="category">{featured.category}</span>
                 <h2 id="featured-title">{featured.title}</h2>
                 <p>{featured.excerpt}</p>
-                <a className="text-link" href="#artigos">Continuar lendo <span aria-hidden="true">→</span></a>
+                <a className="text-link" href={`/artigos/${featured.slug}`}>Continuar lendo <span aria-hidden="true">→</span></a>
               </div>
               <div className="featured-aside">
                 <span className="big-number">01</span>
