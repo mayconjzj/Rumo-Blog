@@ -32,8 +32,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
         <h1 style={{ marginBottom: 8, color: "#05132A", fontFamily: "Manrope, sans-serif", fontSize: "clamp(30px, 4vw, 42px)", letterSpacing: "-.04em" }}>Editar artigo</h1>
         <p style={{ marginBottom: 26, color: "#687789", fontSize: 13, lineHeight: 1.8 }}>Altere o texto, organize as seções e atualize as imagens. As mudanças serão aplicadas ao artigo salvo.</p>
         <section style={{ background: "#fff", border: "1px solid #e1e6eb", padding: "26px clamp(18px, 3vw, 30px)" }}>
-          <form action={updateBlogAction} style={{ display: "none" }}><input name="id" value={post.id} readOnly /></form>
-          <ArticleEditor action={async (formData) => { "use server"; formData.set("id", String(post.id)); await updateBlogAction(formData); }} submitLabel="Salvar alterações" initial={post} />
+          <ArticleEditor action={updateBlogAction} submitLabel="Salvar alterações" initial={post} />
         </section>
       </div>
     </main>
