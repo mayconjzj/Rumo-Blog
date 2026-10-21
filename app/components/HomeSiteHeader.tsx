@@ -3,12 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-  { href: "/", label: "Início" },
-  { href: "/pesquisas", label: "Pesquisas" },
-  { href: "/submeter", label: "Submeter artigo" },
-];
-
 export default function HomeSiteHeader() {
   const pathname = usePathname();
   return <>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
+import SiteFooter from "../components/SiteFooter";
 
 export const metadata = {
   title: "Ética e integridade | Revista Rumo",
@@ -8,6 +9,7 @@ export const metadata = {
 
 export default function PublicationEthics() {
   return (
+    <>
     <main className="editorial-document">
       <Link href="/" className="editorial-back-link">← Revista Rumo</Link>
       <p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p>
@@ -22,5 +24,7 @@ export default function PublicationEthics() {
       <section><h2>Denúncias, correções e retratações</h2><p>Suspeitas de má conduta devem ser comunicadas à equipe editorial com informações verificáveis. Os casos devem ser examinados com imparcialidade e confidencialidade, permitindo resposta das partes envolvidas. Quando justificado, podem ser necessárias correções, avisos ou retratações.</p></section>
       <EditorialDocumentNavigation />
     </main>
+    <SiteFooter />
+    </>
   );
 }

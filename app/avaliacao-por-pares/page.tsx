@@ -1,12 +1,13 @@
 import Link from "next/link";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
+import SiteFooter from "../components/SiteFooter";
 export const metadata = { title: "Avaliação por pares | Revista Rumo", description: "Etapas, critérios e responsabilidades na avaliação científica de manuscritos." };
 export default function PeerReviewPolicy() {
- return <main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Avaliação por pares</h1>
+ return <><main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Avaliação por pares</h1>
  <p className="editorial-lead">A avaliação por pares examina a qualidade científica do manuscrito após a triagem editorial e quando há avaliadores adequados disponíveis. Não garante aceite nem substitui a decisão do editor.</p>
  <section><h2>Etapas do processo</h2><ol><li><strong>Recebimento:</strong> o sistema registra a submissão e gera um número de acompanhamento.</li><li><strong>Triagem técnica:</strong> são verificados escopo, arquivo, metadados e declarações.</li><li><strong>Convite a avaliadores:</strong> a equipe procura pessoas com conhecimento pertinente e considera conflitos de interesse.</li><li><strong>Parecer:</strong> avaliadores registram comentários aos autores e, quando necessário, observações confidenciais ao editor.</li><li><strong>Decisão editorial:</strong> o editor considera os pareceres e pode solicitar revisões, aceitar ou rejeitar.</li><li><strong>Publicação:</strong> após o aceite, a versão final ainda precisa ser conferida e preparada.</li></ol></section>
  <section><h2>Critérios de avaliação</h2><p>Os pareceres podem considerar relevância e contribuição, clareza dos objetivos, adequação metodológica, coerência entre evidências e conclusões, reconhecimento de limitações, referências e qualidade da escrita.</p></section>
  <section><h2>Confidencialidade e anonimização</h2><p>O procedimento previsto é duplo-cego. Remova do PDF nomes, afiliações, agradecimentos identificadores e metadados pessoais. Os dados de autoria permanecem no formulário editorial. A anonimização ajuda a reduzir a identificação, mas não garante anonimato absoluto.</p></section>
  <section><h2>Responsabilidades</h2><p>Avaliadores devem declarar conflitos, tratar o manuscrito como confidencial e apresentar comentários técnicos, respeitosos e fundamentados. O sistema registra convites, pareceres e decisões, mas a realização e a qualidade da avaliação dependem da equipe editorial e de avaliadores qualificados.</p></section>
- <EditorialDocumentNavigation /></main>;
+ <EditorialDocumentNavigation /></main><SiteFooter /></>;
 }

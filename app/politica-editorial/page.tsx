@@ -1,8 +1,9 @@
 import Link from "next/link";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
+import SiteFooter from "../components/SiteFooter";
 export const metadata = { title: "Política editorial | Revista Rumo", description: "Escopo, avaliação, custos e decisões editoriais da Revista Rumo." };
 export default function EditorialPolicy() {
-  return <main className="editorial-document">
+  return <><main className="editorial-document">
     <Link href="/" className="editorial-back-link">← Revista Rumo</Link>
     <p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Política editorial</h1>
     <p className="editorial-lead">A Revista Rumo recebe trabalhos científicos de diferentes áreas do conhecimento. A submissão e a leitura são gratuitas, mas o envio não garante aceite ou publicação.</p>
@@ -13,5 +14,5 @@ export default function EditorialPolicy() {
     <section><h2>Autoria, originalidade e conflitos</h2><p>Os autores são responsáveis pela originalidade, exatidão, referências e concordância de todos os coautores. Plágio, fabricação ou falsificação de dados, conflitos não declarados e problemas de ética podem levar à rejeição. Financiamento e uso relevante de IA devem ser informados.</p></section>
     <section><h2>Correções e transparência</h2><p>Erros relevantes ou suspeitas de má conduta devem ser comunicados à equipe editorial. DOI, indexação, fator de impacto, periodicidade e composição do conselho editorial só serão anunciados quando formalmente definidos e verificáveis.</p></section>
     <EditorialDocumentNavigation />
-  </main>;
+  </main><SiteFooter /></>;
 }

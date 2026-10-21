@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
+import SiteFooter from "../components/SiteFooter";
 import ResearchFilters, { type ResearchPaper } from "./ResearchFilters";
 
 export const dynamic = "force-dynamic";
@@ -59,6 +60,7 @@ export default async function ResearchArchive() {
   }
 
   return (
+    <>
     <main className="research-archive">
       <ResearchSiteHeader />
 
@@ -95,5 +97,7 @@ export default async function ResearchArchive() {
         )}
       </div>
     </main>
+    <SiteFooter />
+    </>
   );
 }

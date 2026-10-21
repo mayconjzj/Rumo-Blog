@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
+import SiteFooter from "../components/SiteFooter";
 import SubmissionForm from "./submission-form";
 
 export const metadata = {
@@ -22,6 +23,7 @@ const scientificAreas = [
 
 export default function SubmitPage() {
   return (
+    <>
     <main className="research-archive submission-page">
       <ResearchSiteHeader />
 
@@ -42,5 +44,7 @@ export default function SubmitPage() {
         <p className="submission-guidance">A submissão não equivale a aceite, não garante publicação e não estabelece prazo de resposta. Guarde o número de acompanhamento exibido após o envio.</p>
       </div>
     </main>
+    <SiteFooter />
+    </>
   );
 }

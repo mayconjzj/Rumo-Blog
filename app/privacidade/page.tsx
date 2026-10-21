@@ -1,13 +1,14 @@
 import Link from "next/link";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
+import SiteFooter from "../components/SiteFooter";
 export const metadata = { title: "Privacidade e dados pessoais | Revista Rumo", description: "Dados tratados durante a submissão e o processo editorial da Revista Rumo." };
 export default function PrivacyPolicy() {
- return <main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Privacidade e dados pessoais</h1>
+ return <><main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Privacidade e dados pessoais</h1>
  <p className="editorial-lead">Esta página resume os dados tratados no processo editorial. A administração da revista precisa completar os dados institucionais de controlador e contato antes da abertura pública definitiva, em conformidade com a LGPD.</p>
  <section><h2>Dados coletados</h2><p>O formulário solicita nomes e afiliações, e-mail do autor correspondente, título, resumo, área científica, palavras-chave, referências, declarações editoriais e o PDF. O sistema também registra informações técnicas necessárias para administrar o envio e manter o histórico editorial.</p></section>
  <section><h2>Finalidades</h2><p>Os dados são usados para registrar a submissão, identificar a autoria, realizar a triagem, organizar avaliações, registrar decisões e preparar eventual publicação. Metadados bibliográficos e o artigo podem se tornar públicos se o manuscrito for publicado.</p></section>
  <section><h2>Acesso e confidencialidade</h2><p>Submissões não publicadas, dados de contato e pareceres devem ficar restritos às pessoas autorizadas. O acesso por avaliadores deve ocorrer apenas quando houver atribuição editorial. Não inclua no PDF dados pessoais desnecessários.</p></section>
  <section><h2>Armazenamento e retenção</h2><p>Os registros podem ser mantidos pelo período necessário à gestão e à integridade editorial e para cumprir obrigações aplicáveis. A entidade responsável precisa definir e publicar os prazos de retenção.</p></section>
  <section><h2>Direitos e canal de contato</h2><p>Pedidos de acesso, correção ou esclarecimento devem ser encaminhados ao responsável pelo tratamento. A identificação formal do controlador, o canal institucional de contato e as bases legais aplicáveis ainda precisam ser publicados pela administração da revista antes da abertura pública definitiva.</p></section>
- <p className="editorial-note">Esta página ainda exige os dados institucionais responsáveis para estar completa. Não é correto inventar nome de entidade, e-mail de contato ou prazos de retenção.</p><EditorialDocumentNavigation /></main>;
+ <p className="editorial-note">Esta página ainda exige os dados institucionais responsáveis para estar completa. Não é correto inventar nome de entidade, e-mail de contato ou prazos de retenção.</p><EditorialDocumentNavigation /></main><SiteFooter /></>;
 }
