@@ -13,8 +13,6 @@ async function getPublishedPapers():Promise<PublishedPaper[]>{
    LEFT JOIN public.submission_authors a ON a.submission_id=s.id
    WHERE s.status='published'
    AND NULLIF(BTRIM(s.title),'') IS NOT NULL
-   AND LOWER(BTRIM(s.title)) NOT IN ('título','titulo','sem título','untitled')
-   AND COALESCE(s.manuscript_file_name,'') NOT ILIKE '%formulario_de_aproveitamento%'
    AND s.manuscript_pdf IS NOT NULL
    GROUP BY s.id ORDER BY s.published_at DESC LIMIT 6`,[]) as unknown as PublishedPaper[];
  }catch{return [];}
