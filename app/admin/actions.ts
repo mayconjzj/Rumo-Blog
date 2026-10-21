@@ -6,14 +6,14 @@ import { requireAdmin } from "@/lib/server/admin-auth";
 import { blogService, type BlogInput } from "@/lib/server/blog-service";
 
 function readInput(formData: FormData): BlogInput {
-  const rawStatus = String(formData.get("status") ?? "draft");
+  const intent = String(formData.get("intent") ?? "draft");
   return {
     title: String(formData.get("title") ?? ""),
     category: String(formData.get("category") ?? "ARTIGOS"),
     excerpt: String(formData.get("excerpt") ?? ""),
     content: String(formData.get("content") ?? ""),
     slug: String(formData.get("slug") ?? ""),
-    status: rawStatus === "published" ? "published" : "draft",
+    status: intent === "publish" ? "published" : "draft",
   };
 }
 
