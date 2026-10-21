@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getPublishedPosts } from "@/lib/blogs";
+import { neon } from "@neondatabase/serverless";
 
 const siteUrl = "https://rumo-blog.vercel.app";
 
@@ -41,5 +42,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
   }
 
+  try {
+    if (process.env.DATABASE_URL) {
+      const sql = neon(process.env.DATABASE_URL);
+      const papers = await sql.query("SELECT public_id, published_at FROM public.journal_submissions WHERE status=$1", ["published"]);
+      for (const paper of papers as unknown as { public_id: string; published_at: string | Date }[]) entries.push({ url: `${siteUrl}/pesquisas/${paper.public_id}`, lastModified: toDate(paper.published_at), changeFrequency: "monthly", priority: 0.8 });
+    }
+  } catch (error) { console.error("Não foi possível carregar publicações científicas para o sitemap.", error); }
+  entries.push({ url: `${siteUrl}/pesquisas`, changeFrequency: "weekly", priority: 0.8 });
+  for (const path of ["/submeter", "/politica-editorial", "/avaliacao-por-pares", "/etica-publicacao", "/privacidade"]) entries.push({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: path === "/submeter" ? 0.6 : 0.4 });
   return entries;
 }
