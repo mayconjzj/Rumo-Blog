@@ -533,3 +533,29 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   .research-count { grid-column: auto; padding: 3px 1px; }
   .research-card { padding: 20px; }
 }
+
+
+/* Submission page layout shares the research archive design system. */
+.submission-content > h1 {
+  margin-bottom: 12px;
+  color: #05132a;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+.submission-intro {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+.submission-form-panel {
+  padding: clamp(20px, 4vw, 34px);
+  border: 1px solid #e1e6eb;
+  background: #fff;
+}
+.submission-guidance {
+  margin-top: 20px;
+  color: #687789;
+  font-size: 12px;
+  line-height: 1.7;
+}
