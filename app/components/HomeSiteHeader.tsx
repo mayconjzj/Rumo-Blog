@@ -11,7 +11,6 @@ export default function HomeSiteHeader() {
       <Link className="brand" href="/" aria-label="Rumo, página inicial"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
       <nav className="main-nav" aria-label="Navegação principal">
         <Link className={pathname === "/" ? "nav-active" : undefined} aria-current={pathname === "/" ? "page" : undefined} href="/">Início</Link>
-        <a href="/#artigos">Conteúdo editorial</a>
         <a href="/#sobre">Sobre</a>
         <Link className={pathname === "/pesquisas" || pathname.startsWith("/pesquisas/") ? "nav-active" : undefined} aria-current={pathname === "/pesquisas" || pathname.startsWith("/pesquisas/") ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
       </nav>
@@ -19,7 +18,7 @@ export default function HomeSiteHeader() {
       <details className="mobile-nav-menu"><summary aria-label="Abrir menu de navegação"><span className="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span></summary>
         <nav className="mobile-nav-panel" aria-label="Navegação móvel">
           <Link className={pathname === "/" ? "nav-active" : undefined} aria-current={pathname === "/" ? "page" : undefined} href="/">Início</Link>
-          <a href="/#artigos">Conteúdo editorial</a><a href="/#sobre">Sobre</a>
+          <a href="/#sobre">Sobre</a>
           <Link className={pathname === "/pesquisas" || pathname.startsWith("/pesquisas/") ? "nav-active" : undefined} aria-current={pathname === "/pesquisas" || pathname.startsWith("/pesquisas/") ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
           <Link className={pathname === "/submeter" ? "nav-active" : undefined} aria-current={pathname === "/submeter" ? "page" : undefined} href="/submeter">Submeter artigo</Link>
         </nav>
