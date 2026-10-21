@@ -22,7 +22,7 @@ export default async function HomePage() {
     title: post.title,
     excerpt: post.excerpt,
     date: formatArticleDate(post.published_at ?? post.created_at),
-    readTime: Math.max(1, Math.ceil(post.content.trim().split(/\\s+/).length / 220)) + " min de leitura",
+    readTime: Math.max(1, Math.ceil(post.content.trim().split(/\s+/).length / 220)) + " min de leitura",
   }));
 
   return (
