@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
 import { requireAdmin } from "@/lib/server/admin-auth";
-import LogoutButton from "../LogoutButton";
+import AdminHeader from "@/app/components/AdminHeader";
 import { assignReviewerAction,updateSubmissionAction } from "./actions";
 export const dynamic="force-dynamic";
 type Submission={id:number;public_id:string;title:string;abstract:string;scientific_area:string;keywords:string[];status:string;corresponding_author_email:string;created_at:string|Date;manuscript_file_name:string|null;review_round:number};
@@ -16,7 +16,7 @@ export default async function EditorialSubmissions({searchParams}:{searchParams:
   sql.query("SELECT r.submission_id,r.reviewer_email,p.recommendation,p.comments_to_author,p.confidential_to_editor,p.submitted_at FROM public.review_assignments r JOIN public.peer_reviews p ON p.assignment_id=r.id ORDER BY p.submitted_at DESC",[])
  ]);submissions=data[0] as unknown as Submission[];reviews=data[1] as unknown as Review[];}catch{dbError=true;}
  const panel={background:"#fff",border:"1px solid #e1e6eb",padding:22};
- return <main style={{minHeight:"100vh",background:"#f4f6f8",color:"#17283b"}}><header style={{background:"#05132A",color:"#fff",padding:"20px max(22px, calc((100vw - 1160px) / 2))",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,flexWrap:"wrap"}}><Link href="/" className="brand" style={{color:"#fff"}}><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link><div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}><span style={{fontSize:12,color:"#c1ccda"}}>{email}</span><LogoutButton/><Link href="/admin" style={{fontSize:12,color:"#87BAFF"}}>Painel</Link><Link href="/admin/metricas" style={{fontSize:12,color:"#87BAFF"}}>Métricas</Link></div></header>
+ return <main style={{minHeight:"100vh",background:"#f4f6f8",color:"#17283b"}}><AdminHeader email={email} />
  <div style={{maxWidth:1160,margin:"0 auto",padding:"38px 22px 70px"}}><p style={{fontSize:11,fontWeight:800,letterSpacing:".14em",color:"#195AB4",marginBottom:8}}>RUMO / EDITORIAL</p><h1 style={{fontSize:"clamp(30px,4vw,42px)",color:"#05132A",letterSpacing:"-.04em",marginBottom:8}}>Submissões científicas</h1><p style={{fontSize:14,color:"#687789",lineHeight:1.8,maxWidth:700,marginBottom:26}}>Faça a triagem, acompanhe pareceres e convide avaliadores. Um artigo só pode ser publicado depois de aceito pelo editor.</p>
  {params.erro&&<p role="alert" style={{background:"#fff0ee",color:"#8c1d18",padding:13,fontSize:13}}>{params.erro==="banco"?"Banco indisponível ou migrações pendentes.":params.erro==="campos"?"Confira o e-mail do avaliador.":params.erro==="precisa_aceite"?"O manuscrito precisa estar aceito antes da publicação.":"Não foi possível executar essa ação."}</p>}
  {params.sucesso&&<p role="status" style={{background:"#eaf8ef",color:"#17633a",padding:13,fontSize:13}}>{params.sucesso==="avaliador"?"Avaliador atribuído. Envie o link /avaliador ao e-mail cadastrado.":"Estado da submissão atualizado."}</p>}
