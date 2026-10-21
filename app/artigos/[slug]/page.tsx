@@ -111,7 +111,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
   if (post) {
-    const paragraphs = post.content.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+    let structured: { version?: number; intro?: string; coverImage?: string; sections?: { heading?: string; text?: string; imageUrl?: string; caption?: string }[] } | null = null;
+    try {
+      const parsed = JSON.parse(post.content);
+      if (parsed?.version === 1 && Array.isArray(parsed.sections)) structured = parsed;
+    } catch {}
+    const paragraphs = structured ? [] : post.content.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+    const contentSections = structured?.sections ?? [];
     return (
       <main className="reading-page">
         <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
@@ -122,8 +128,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div></header>
         <div className="article-breadcrumb container"><Link href="/">Início</Link><span>/</span><Link href="/#artigos">Artigos</Link><span>/</span><span>{post.category}</span></div>
         <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><time>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(post.published_at ?? post.created_at))}</time></div></header>
-          <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>
-          <div className="reading-body">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}<div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
+          {structured?.coverImage ? <img src={structured.coverImage} alt={post.title} style={{ display: "block", width: "min(1000px, calc(100% - 48px))", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
+          <div className="reading-body">
+            {structured?.intro && <p className="reading-intro" style={{ whiteSpace: "pre-line" }}>{structured.intro}</p>}
+            {structured ? contentSections.map((section, index) => (
+              <section key={index}>
+                {section.heading && <h2>{section.heading}</h2>}
+                {section.text?.split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex}>{paragraph.trim()}</p>)}
+                {section.imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={section.imageUrl} alt={section.caption || section.heading || post.title} style={{ display: "block", width: "100%", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
+              </section>
+            )) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
+            <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
         </article>
         <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
         <section className="reading-back"><div className="container reading-back-inner"><div><span className="section-number">CONTINUE EXPLORANDO</span><h2>Mais ideias para <em>seguir em frente.</em></h2></div><Link className="button button-primary" href="/#artigos">Voltar aos artigos <span aria-hidden="true">↗</span></Link></div></section>
