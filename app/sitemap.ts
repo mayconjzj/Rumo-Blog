@@ -3,6 +3,9 @@ import { getPublishedPosts } from "@/lib/blogs";
 
 const siteUrl = "https://rumo-blog.vercel.app";
 
+// Rebuild the sitemap on each request so database changes appear without a redeploy.
+export const dynamic = "force-dynamic";
+
 function toDate(value: string | Date | null | undefined): Date | undefined {
   if (!value) return undefined;
   const date = value instanceof Date ? value : new Date(value);
