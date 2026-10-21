@@ -34,7 +34,7 @@ function ArticleCard({ article }: { article: ArticleSummary }) {
       <p>{article.excerpt}</p>
       <div className="article-bottom">
         <time>{article.date}</time>
-        <a href={`/artigos/${article.slug}`} aria-label={`Ler: ${article.title}`}>
+        <a href={article.href ?? `/artigos/${article.slug}`} aria-label={`Ler: ${article.title}`}>
           Ler artigo <ArrowIcon />
         </a>
       </div>
