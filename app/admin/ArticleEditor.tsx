@@ -7,7 +7,7 @@ type ArticleDraft = { intro: string; coverImage: string; sections: Section[] };
 type Props = {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
-  initial?: { title?: string; slug?: string; category?: string; excerpt?: string; content?: string; status?: string };
+  initial?: { id?: number; title?: string; slug?: string; category?: string; excerpt?: string; content?: string; status?: string };
 };
 
 const inputStyle = { width: "100%", minWidth: 0, padding: "12px 13px", border: "1px solid #dbe2e9", color: "#17283b", background: "#fff", font: "inherit", fontSize: 13 } as const;
@@ -78,6 +78,7 @@ export default function ArticleEditor({ action, submitLabel, initial }: Props) {
 
       <button type="button" onClick={addSection} style={{ marginTop: 12, padding: "13px 15px", border: "1px dashed #8ea4bc", color: "#195AB4", background: "#f8fbff", cursor: "pointer", fontSize: 12, fontWeight: 800 }}>+ Adicionar seção</button>
       <input type="hidden" name="content" value={serialized} />
+      {initial?.id !== undefined && <input type="hidden" name="id" value={initial.id} />}
       <input type="hidden" name="originalSlug" value={initial?.slug ?? ""} />
       <label style={labelStyle} htmlFor="status">Status do artigo</label>
       <select id="status" name="status" defaultValue={initial?.status ?? "published"} style={inputStyle}>
