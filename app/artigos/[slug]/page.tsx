@@ -7,21 +7,6 @@ import { siteUrl } from "@/lib/site";
 
 type ArticleSource = { title: string; url: string };
 
-type ArticleContent = {
-  slug: string;
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  datePublished: string;
-  updatedAt?: string;
-  dateModified?: string;
-  readTime: string;
-  intro: string;
-  sections: { heading: string; paragraphs: string[] }[];
-  sources?: ArticleSource[];
-};
-
 function sectionId(heading: string) {
   return heading.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
