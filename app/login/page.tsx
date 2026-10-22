@@ -33,7 +33,10 @@ export default async function SignInPage({
   const email = data?.user?.email?.trim().toLowerCase();
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
-  if (data?.user) redirect(adminEmail && email === adminEmail ? "/admin" : returnTo);
+  if (data?.user) {
+    if (data.user.emailVerified !== true) redirect("/verificar-email");
+    redirect(adminEmail && email === adminEmail ? "/admin" : returnTo);
+  }
 
   return (
     <CommunityAuthShell
