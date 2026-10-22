@@ -12,6 +12,8 @@ export async function communitySignInAction(formData: FormData) {
  if (!email || !password) redirect(`/login?erro=campos&returnTo=${encodeURIComponent(returnTo)}`);
  const { error } = await auth.signIn.email({ email, password });
  if (error) redirect(`/login?erro=credenciais&returnTo=${encodeURIComponent(returnTo)}`);
+ const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+ if (adminEmail && email === adminEmail) redirect("/admin");
  redirect(returnTo);
 }
 export async function communitySignUpAction(formData: FormData) {
