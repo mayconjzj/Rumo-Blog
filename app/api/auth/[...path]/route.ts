@@ -1,22 +1,11 @@
 import { auth } from "@/lib/auth/server";
 
+// Forward every method supported by Neon Auth. In particular, password-reset
+// requests must reach the managed auth service instead of being blocked here.
 const handlers = auth.handler();
 
 export const GET = handlers.GET;
-
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ path: string[] }> },
-) {
-  const pathname = new URL(request.url).pathname;
-  const blockedEndpoints = ["/request-password-reset", "/reset-password"];
-
-  if (blockedEndpoints.some((endpoint) => pathname.endsWith(endpoint))) {
-    return Response.json(
-      { message: "Password reset is disabled for this application." },
-      { status: 404 },
-    );
-  }
-
-  return handlers.POST(request, context);
-}
+export const POST = handlers.POST;
+export const PUT = handlers.PUT;
+export const DELETE = handlers.DELETE;
+export const PATCH = handlers.PATCH;
