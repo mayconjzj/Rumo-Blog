@@ -27,3 +27,8 @@ export async function communitySignUpAction(formData: FormData) {
  if (error) redirect(`/sign-up?erro=cadastro&returnTo=${encodedReturnTo}`);
  redirect(`/login?cadastro=ok&returnTo=${encodedReturnTo}`);
 }
+
+export async function communitySignOutAction() {
+  await auth.signOut();
+  redirect("/");
+}
