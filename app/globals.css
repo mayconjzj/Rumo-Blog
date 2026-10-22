@@ -724,7 +724,7 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 
 
 /* Shared UI primitives: define interaction and visual variants once. */
-.ui-button {
+:where(.ui-button) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -741,49 +741,49 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   cursor: pointer;
   transition: background-color .2s, color .2s, border-color .2s, transform .2s;
 }
-.ui-button:focus-visible,
-.ui-text-link:focus-visible {
+:where(.ui-button):focus-visible,
+:where(.ui-text-link):focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
-.ui-button:disabled {
+:where(.ui-button):disabled {
   opacity: .55;
   cursor: not-allowed;
 }
-.ui-button--primary {
+:where(.ui-button--primary) {
   color: var(--navy-deep);
   background: var(--gold);
 }
-.ui-button--primary:hover { background: #87BAFF; }
-.ui-button--navy {
+:where(.ui-button--primary):hover { background: #87BAFF; }
+:where(.ui-button--navy) {
   color: #fff;
   background: var(--navy);
 }
-.ui-button--navy:hover { background: #195AB4; }
-.ui-button--outline {
+:where(.ui-button--navy):hover { background: #195AB4; }
+:where(.ui-button--outline) {
   color: var(--navy);
   border-color: #d9e0e7;
   background: #fff;
 }
-.ui-button--outline:hover {
+:where(.ui-button--outline):hover {
   color: #fff;
   border-color: var(--navy);
   background: var(--navy);
 }
-.ui-button--subtle {
+:where(.ui-button--subtle) {
   color: var(--navy);
   border-color: var(--line);
   background: var(--surface);
 }
-.ui-button--subtle:hover { background: #e8edf2; }
-.ui-button__arrow {
+:where(.ui-button--subtle):hover { background: #e8edf2; }
+:where(.ui-button__arrow) {
   flex: 0 0 auto;
   color: var(--gold);
   font-size: 16px;
   line-height: 1;
 }
-.ui-button--primary .ui-button__arrow { color: var(--navy); }
-.ui-text-link {
+:where(.ui-button--primary .ui-button__arrow) { color: var(--navy); }
+:where(.ui-text-link) {
   display: inline-flex;
   align-items: center;
   gap: 13px;
@@ -792,15 +792,15 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   font-weight: 700;
   text-decoration: none;
 }
-.ui-text-link > span {
+:where(.ui-text-link) > span {
   color: var(--gold);
   font-size: 18px;
   transition: transform .2s;
 }
-.ui-text-link:hover > span { transform: translateX(4px); }
+:where(.ui-text-link:hover) > span { transform: translateX(4px); }
 .ui-page-intro > :last-child { margin-bottom: 0; }
 @media (max-width: 600px) {
-  .ui-button {
+  :where(.ui-button) {
     min-height: 42px;
     padding: 11px 13px;
     gap: 13px;
