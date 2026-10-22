@@ -1,10 +1,13 @@
-# Rumo Blog
+# Revista Rumo
 
-Página inicial do Rumo Blog construída com Next.js App Router, React e TypeScript.
+Aplicação web da Revista Rumo, construída com Next.js App Router, React, TypeScript e Neon Auth/Database.
 
-## Executar localmente
+## Requisitos
 
-Requisitos: Node.js 20.9 ou superior.
+- Node.js 20.9 ou superior.
+- Variáveis de ambiente de autenticação e banco configuradas para executar os fluxos protegidos.
+
+## Desenvolvimento local
 
 ```bash
 npm install
@@ -13,16 +16,19 @@ npm run dev
 
 Abra http://localhost:3000.
 
-## Estrutura
+## Verificações de qualidade
 
-- `app/page.tsx`: composição da página inicial e componentes de apresentação.
-- `app/layout.tsx`: layout raiz e metadados.
-- `app/globals.css`: identidade visual responsiva e estilos globais.
+```bash
+npm run check
+npm run build
+```
 
 ## Organização
 
-A página separa a apresentação de artigos em componentes pequenos e usa um tipo `Article` para manter a estrutura dos dados consistente. Os artigos atuais são exemplos estáticos; o próximo passo é conectá-los a uma fonte persistente e ao painel administrativo.
+- `app/`: páginas, componentes, Server Actions e controladores de API do Next.js.
+- `lib/auth/`: configuração de autenticação.
+- `lib/server/`: regras de aplicação e acesso a dados exclusivo do servidor.
+- `db/migrations/`: migrações SQL incrementais.
+- `docs/ARCHITECTURE.md`: camadas, princípios de arquitetura e diretrizes de segurança.
 
-## Nota sobre a identidade visual
-
-O visual usa uma linguagem institucional do setor financeiro — azul-marinho, branco, detalhes dourados e tipografia sóbria — sem reproduzir logotipos ou elementos proprietários do BTG Pactual.
+Revise e aplique migrações de forma controlada no banco correto. Não execute migrações em produção sem confirmar o ambiente e o impacto.

@@ -1,32 +1,278 @@
 import Link from "next/link";
-import { neon } from "@neondatabase/serverless";
 import HomeSiteHeader from "./components/HomeSiteHeader";
 import SiteFooter from "./components/SiteFooter";
+import { listLatestPublishedPapers } from "@/lib/server/publication-repository";
+
 export const dynamic = "force-dynamic";
-type PublishedPaper={public_id:string;title:string;abstract:string;scientific_area:string;keywords:string[];published_at:string|Date;authors:string};
-async function getPublishedPapers():Promise<PublishedPaper[]>{
- try{
-  if(!process.env.DATABASE_URL)return [];
-  const sql=neon(process.env.DATABASE_URL);
-  return await sql.query(`SELECT s.public_id,s.title,s.abstract,s.scientific_area,s.keywords,s.published_at,COALESCE(string_agg(a.display_name,', ' ORDER BY a.author_order),'') AS authors
-   FROM public.journal_submissions s
-   LEFT JOIN public.submission_authors a ON a.submission_id=s.id
-   WHERE s.status='published'
-   AND NULLIF(BTRIM(s.title),'') IS NOT NULL
-   AND s.manuscript_pdf IS NOT NULL
-   GROUP BY s.id ORDER BY s.published_at DESC LIMIT 6`,[]) as unknown as PublishedPaper[];
- }catch{return [];}
+
+function ArrowIcon() {
+  return (
+    <span aria-hidden="true" className="arrow">
+      ↗
+    </span>
+  );
 }
-function ArrowIcon(){return <span aria-hidden="true" className="arrow">↗</span>;}
-export default async function HomePage(){
- const papers = await getPublishedPapers();
- return <main>
-  <HomeSiteHeader />
-  <section className="hero" id="inicio"><div className="container hero-grid"><div className="hero-copy"><div className="eyebrow"><span/> REVISTA RUMO · ACESSO GRATUITO</div><h1>Conhecimento científico sem <em>fronteiras.</em></h1><p className="hero-description">A Revista Rumo é um espaço multidisciplinar para a circulação de pesquisas científicas. Consulte artigos publicados gratuitamente ou envie seu manuscrito para avaliação editorial.</p><div className="hero-actions"><a className="button button-primary" href="/pesquisas">Explorar pesquisas <ArrowIcon/></a><a className="text-link" href="/submeter">Submeta sua pesquisa <span aria-hidden="true">→</span></a></div><div className="hero-note"><span className="note-line"/><span>Leitura e submissão gratuitas.</span></div></div><div className="hero-visual" aria-label="Composição gráfica abstrata sobre pesquisa e conhecimento"><div className="visual-orbit orbit-one"/><div className="visual-orbit orbit-two"/><div className="visual-grid"/><div className="visual-label">PESQUISA ABERTA</div><div className="visual-chart"><span className="chart-caption">CONHECIMENTO</span><svg viewBox="0 0 460 220" role="img" aria-label="Ilustração abstrata"><defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#549CFF" stopOpacity=".28"/><stop offset="100%" stopColor="#549CFF" stopOpacity="0"/></linearGradient></defs><path d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13 L460 220 L0 220 Z" fill="url(#areaFill)"/><path d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13" fill="none" stroke="#549CFF" strokeWidth="3" strokeLinecap="round"/><circle cx="460" cy="13" r="5" fill="#549CFF"/></svg><div className="chart-footer"><span>CIÊNCIA</span><span>EVIDÊNCIA</span><span>CONHECIMENTO</span></div></div><div className="visual-index">01 <span>—</span> 03</div></div></div></section>
-  <section className="published-research-section" aria-labelledby="published-research-title"><div className="container"><div className="section-heading"><div><div className="section-number">01 / ARQUIVO CIENTÍFICO</div><h2 id="published-research-title">Pesquisas <em>publicadas.</em></h2></div><p>Artigos científicos aceitos, publicados e disponíveis gratuitamente para leitura.</p></div>
-  {papers.length===0?<div className="published-research-empty"><h3>O arquivo científico está começando.</h3><p>Ainda não há artigos científicos publicados. Quando um manuscrito for aprovado e publicado pela equipe editorial, ele aparecerá aqui. Submissões em avaliação não são públicas.</p><Link href="/pesquisas">Acessar o arquivo científico ↗</Link></div>:<div className="published-research-grid">{papers.map(p=><article className="published-research-card" key={p.public_id}><p className="published-research-meta">{p.scientific_area} · {new Date(p.published_at).toLocaleDateString("pt-BR")}</p><h3><Link href={"/pesquisas/"+p.public_id}>{p.title}</Link></h3>{p.authors&&<p className="published-research-authors">{p.authors}</p>}<p className="published-research-abstract">{p.abstract.length>230?p.abstract.slice(0,230)+"…":p.abstract}</p><Link className="published-research-link" href={"/pesquisas/"+p.public_id}>Ler artigo e PDF ↗</Link></article>)}</div>}
-  <div className="published-research-footer"><Link href="/pesquisas">Ver todas as pesquisas publicadas ↗</Link></div></div></section>
-  <section className="journal-process-section"><div className="container"><div className="section-number">COMO FUNCIONA</div><h2>Da submissão à <em>publicação.</em></h2><p className="journal-process-intro">Entenda as etapas editoriais antes de enviar seu trabalho.</p><div className="journal-process-grid"><article><span>01</span><h3>Submissão</h3><p>Envie os dados do manuscrito, a autoria e o PDF pelo formulário. O envio é gratuito.</p></article><article><span>02</span><h3>Triagem editorial</h3><p>A equipe verifica o escopo, os requisitos técnicos, a integridade e a documentação.</p></article><article><span>03</span><h3>Avaliação por pares</h3><p>Quando adequado, o manuscrito pode ser encaminhado a avaliadores da área. Os pareceres orientam, mas não substituem, a decisão editorial.</p></article><article><span>04</span><h3>Decisão e publicação</h3><p>O editor pode solicitar revisões, aceitar ou rejeitar. Só trabalhos aceitos e efetivamente publicados ficam no arquivo aberto.</p></article></div><Link className="text-link journal-process-link" href="/avaliacao-por-pares">Leia como funciona a avaliação por pares <span aria-hidden="true">→</span></Link></div></section><section id="sobre" className="about-section"><div className="container"><div className="section-number">03 / SOBRE A REVISTA</div><h2>Pesquisa aberta. <em>Conhecimento compartilhado.</em></h2><p>A Revista Rumo recebe manuscritos de diferentes áreas do conhecimento. Cada envio passa por triagem editorial; trabalhos adequados ao escopo podem seguir para avaliação por pares. A decisão final é editorial, e somente artigos aprovados e preparados para publicação entram no arquivo público.</p><p className="about-disclaimer">Não há taxa de submissão nem de leitura. A revista não promete prazo fixo para decisão; DOI, indexação, periodicidade e composição do conselho editorial só serão anunciados quando formalmente confirmados.</p><div className="hero-actions"><a className="button button-primary" href="/pesquisas">Ver arquivo científico <ArrowIcon/></a><a className="text-link" href="/submeter">Submeter pesquisa <span aria-hidden="true">→</span></a></div></div></section>
-  <SiteFooter />
- </main>;
+
+function HeroSection() {
+  return (
+    <section className="hero" id="inicio">
+      <div className="container hero-grid">
+        <div className="hero-copy">
+          <div className="eyebrow">
+            <span /> REVISTA RUMO · ACESSO GRATUITO
+          </div>
+          <h1>
+            Conhecimento científico sem <em>fronteiras.</em>
+          </h1>
+          <p className="hero-description">
+            A Revista Rumo é um espaço multidisciplinar para a circulação de
+            pesquisas científicas. Consulte artigos publicados gratuitamente ou
+            envie seu manuscrito para avaliação editorial.
+          </p>
+          <div className="hero-actions">
+            <Link className="button button-primary" href="/pesquisas">
+              Explorar pesquisas <ArrowIcon />
+            </Link>
+            <Link className="text-link" href="/submeter">
+              Submeta sua pesquisa <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <div className="hero-note">
+            <span className="note-line" />
+            <span>Leitura e submissão gratuitas.</span>
+          </div>
+        </div>
+
+        <div
+          className="hero-visual"
+          aria-label="Composição gráfica abstrata sobre pesquisa e conhecimento"
+        >
+          <div className="visual-orbit orbit-one" />
+          <div className="visual-orbit orbit-two" />
+          <div className="visual-grid" />
+          <div className="visual-label">PESQUISA ABERTA</div>
+          <div className="visual-chart">
+            <span className="chart-caption">CONHECIMENTO</span>
+            <svg viewBox="0 0 460 220" role="img" aria-label="Ilustração abstrata">
+              <defs>
+                <linearGradient
+                  id="areaFill"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor="#549CFF" stopOpacity=".28" />
+                  <stop offset="100%" stopColor="#549CFF" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13 L460 220 L0 220 Z"
+                fill="url(#areaFill)"
+              />
+              <path
+                d="M0 190 C45 175 57 183 91 147 S151 159 183 119 S233 137 264 93 S318 111 347 61 S408 58 460 13"
+                fill="none"
+                stroke="#549CFF"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              <circle cx="460" cy="13" r="5" fill="#549CFF" />
+            </svg>
+            <div className="chart-footer">
+              <span>CIÊNCIA</span>
+              <span>EVIDÊNCIA</span>
+              <span>CONHECIMENTO</span>
+            </div>
+          </div>
+          <div className="visual-index">
+            01 <span>—</span> 03
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PublishedResearchSection({
+  papers,
+}: {
+  papers: Awaited<ReturnType<typeof listLatestPublishedPapers>>;
+}) {
+  return (
+    <section
+      className="published-research-section"
+      aria-labelledby="published-research-title"
+    >
+      <div className="container">
+        <div className="section-heading">
+          <div>
+            <div className="section-number">01 / ARQUIVO CIENTÍFICO</div>
+            <h2 id="published-research-title">
+              Pesquisas <em>publicadas.</em>
+            </h2>
+          </div>
+          <p>
+            Artigos científicos aceitos, publicados e disponíveis gratuitamente
+            para leitura.
+          </p>
+        </div>
+
+        {papers.length === 0 ? (
+          <div className="published-research-empty">
+            <h3>O arquivo científico está começando.</h3>
+            <p>
+              Ainda não há artigos científicos publicados. Quando um manuscrito
+              for aprovado e publicado pela equipe editorial, ele aparecerá
+              aqui. Submissões em avaliação não são públicas.
+            </p>
+            <Link href="/pesquisas">Acessar o arquivo científico ↗</Link>
+          </div>
+        ) : (
+          <div className="published-research-grid">
+            {papers.map((paper) => (
+              <article
+                className="published-research-card"
+                key={paper.public_id}
+              >
+                <p className="published-research-meta">
+                  {paper.scientific_area} ·{" "}
+                  {paper.published_at
+                    ? new Date(paper.published_at).toLocaleDateString("pt-BR")
+                    : "Data não informada"}
+                </p>
+                <h3>
+                  <Link href={"/pesquisas/" + paper.public_id}>
+                    {paper.title}
+                  </Link>
+                </h3>
+                {paper.authors && (
+                  <p className="published-research-authors">{paper.authors}</p>
+                )}
+                <p className="published-research-abstract">
+                  {paper.abstract.length > 230
+                    ? paper.abstract.slice(0, 230) + "…"
+                    : paper.abstract}
+                </p>
+                <Link
+                  className="published-research-link"
+                  href={"/pesquisas/" + paper.public_id}
+                >
+                  Ler artigo e PDF ↗
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
+
+        <div className="published-research-footer">
+          <Link href="/pesquisas">Ver todas as pesquisas publicadas ↗</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EditorialProcessSection() {
+  return (
+    <section className="journal-process-section">
+      <div className="container">
+        <div className="section-number">COMO FUNCIONA</div>
+        <h2>
+          Da submissão à <em>publicação.</em>
+        </h2>
+        <p className="journal-process-intro">
+          Entenda as etapas editoriais antes de enviar seu trabalho.
+        </p>
+        <div className="journal-process-grid">
+          <article>
+            <span>01</span>
+            <h3>Submissão</h3>
+            <p>
+              Envie os dados do manuscrito, a autoria e o PDF pelo formulário. O
+              envio é gratuito.
+            </p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Triagem editorial</h3>
+            <p>
+              A equipe verifica o escopo, os requisitos técnicos, a integridade
+              e a documentação.
+            </p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Avaliação por pares</h3>
+            <p>
+              Quando adequado, o manuscrito pode ser encaminhado a avaliadores
+              da área. Os pareceres orientam, mas não substituem, a decisão
+              editorial.
+            </p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Decisão e publicação</h3>
+            <p>
+              O editor pode solicitar revisões, aceitar ou rejeitar. Só
+              trabalhos aceitos e efetivamente publicados ficam no arquivo
+              aberto.
+            </p>
+          </article>
+        </div>
+        <Link className="text-link journal-process-link" href="/avaliacao-por-pares">
+          Leia como funciona a avaliação por pares{" "}
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  return (
+    <section id="sobre" className="about-section">
+      <div className="container">
+        <div className="section-number">03 / SOBRE A REVISTA</div>
+        <h2>
+          Pesquisa aberta. <em>Conhecimento compartilhado.</em>
+        </h2>
+        <p>
+          A Revista Rumo recebe manuscritos de diferentes áreas do conhecimento.
+          Cada envio passa por triagem editorial; trabalhos adequados ao escopo
+          podem seguir para avaliação por pares. A decisão final é editorial, e
+          somente artigos aprovados e preparados para publicação entram no
+          arquivo público.
+        </p>
+        <p className="about-disclaimer">
+          Não há taxa de submissão nem de leitura. A revista não promete prazo
+          fixo para decisão; DOI, indexação, periodicidade e composição do
+          conselho editorial só serão anunciados quando formalmente confirmados.
+        </p>
+        <div className="hero-actions">
+          <Link className="button button-primary" href="/pesquisas">
+            Ver arquivo científico <ArrowIcon />
+          </Link>
+          <Link className="text-link" href="/submeter">
+            Submeter pesquisa <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default async function HomePage() {
+  const papers = await listLatestPublishedPapers();
+
+  return (
+    <main>
+      <HomeSiteHeader />
+      <HeroSection />
+      <PublishedResearchSection papers={papers} />
+      <EditorialProcessSection />
+      <AboutSection />
+      <SiteFooter />
+    </main>
+  );
 }
