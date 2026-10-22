@@ -14,7 +14,7 @@ export async function getCommunityAccess(): Promise<CommunityAccess> {
   const email = user?.email?.trim().toLowerCase();
   const userId = user?.id ? String(user.id) : "";
 
-  if (!email || !userId || user?.emailVerified === false) return { status: "anonymous" };
+  if (!email || !userId || user?.emailVerified !== true) return { status: "anonymous" };
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not configured");
   }
