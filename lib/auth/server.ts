@@ -11,6 +11,9 @@ export const auth = createNeonAuth({
   baseUrl,
   cookies: {
     secret: cookieSecret,
+    // OAuth returns to the app through a cross-site top-level navigation.
+    // Lax allows the session cookie on that return so the login page sees it.
+    sameSite: "lax",
     sessionDataTtl: 300,
   },
 });
