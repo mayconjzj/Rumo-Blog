@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth/server";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import SubmissionForm from "./submission-form";
@@ -21,7 +23,10 @@ const scientificAreas = [
   "Multidisciplinar",
 ];
 
-export default function SubmitPage() {
+export default async function SubmitPage() {
+  const { data: session } = await auth.getSession();
+  if (!session?.user) redirect("/login?returnTo=%2Fsubmeter");
+
   return (
     <>
     <main className="research-archive submission-page">
