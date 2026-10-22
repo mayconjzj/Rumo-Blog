@@ -21,8 +21,8 @@ export default function HomeSiteHeaderClient({ isAuthenticated }: Props) {
         <Link className={isResearch ? "nav-active" : undefined} aria-current={isResearch ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
       </nav>
       <div className="public-auth-actions">
-        {isAuthenticated ? <form action={communitySignOutAction}><button className="public-login-link public-logout-button" type="submit">Sair</button></form> : <>
-          <Link className="public-login-link" href="/login">Entrar</Link>
+        {isAuthenticated ? <form action={communitySignOutAction}><Button type="submit" variant="outline" className="public-login-link public-logout-button">Sair</Button></form> : <>
+          <Button href="/login" variant="outline" className="public-login-link">Entrar</Button>
           <Button href="/sign-up" variant="navy" className="public-signup-link" arrow="up-right">Criar conta</Button>
         </>}
       </div>
@@ -34,8 +34,8 @@ export default function HomeSiteHeaderClient({ isAuthenticated }: Props) {
           <Link className={isResearch ? "nav-active" : undefined} aria-current={isResearch ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
           <Link className={pathname === "/submeter" ? "nav-active" : undefined} aria-current={pathname === "/submeter" ? "page" : undefined} href="/submeter">Submeter artigo</Link>
           <div className="mobile-auth-actions">
-            {isAuthenticated ? <form action={communitySignOutAction}><button className="mobile-logout-button" type="submit">Sair da conta</button></form> : <>
-              <Link className="mobile-login-link" href="/login">Entrar</Link>
+            {isAuthenticated ? <form action={communitySignOutAction}><Button type="submit" variant="outline" className="mobile-logout-button">Sair da conta</Button></form> : <>
+              <Button href="/login" variant="outline" className="mobile-login-link">Entrar</Button>
               <Button href="/sign-up" variant="navy" className="mobile-signup-link" arrow="up-right">Criar conta</Button>
             </>}
           </div>
