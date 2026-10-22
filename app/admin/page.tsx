@@ -24,6 +24,11 @@ export default async function AdminPage() {
             <h2>Submissões científicas <span aria-hidden="true">↗</span></h2>
             <p>Triagem, pareceres, decisões editoriais e publicação dos artigos aceitos.</p>
           </Link>
+          <Link className="admin-home-card" href="/admin/usuarios">
+            <span className="admin-card-index">03 / COMUNIDADE</span>
+            <h2>Gerenciar usuários <span aria-hidden="true">↗</span></h2>
+            <p>Consultar contas e gerenciar perfis comunitários sem excluir a identidade de autenticação.</p>
+          </Link>
         </div>
       </div>
     </main>
