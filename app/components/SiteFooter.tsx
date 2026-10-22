@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Brand from "./ui/Brand";
+import TextLink from "./ui/TextLink";
 
 const editorialLinks = [
   { href: "/politica-editorial", label: "Política editorial" },
@@ -12,10 +14,7 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <div className="container footer-main">
         <div className="footer-brand-column">
-          <Link className="brand brand-footer" href="/" aria-label="Revista Rumo — página inicial">
-            <span className="brand-mark">R</span>
-            <span>rumo<span className="brand-period">.</span></span>
-          </Link>
+          <Brand className="brand-footer" />
           <p className="footer-description">
             Conhecimento científico em circulação. Um espaço multidisciplinar para compartilhar pesquisas e ampliar o acesso à ciência.
           </p>
@@ -36,7 +35,7 @@ export default function SiteFooter() {
           <span className="footer-eyebrow">TEM UMA PESQUISA?</span>
           <h2>Compartilhe seu trabalho.</h2>
           <p>Consulte as orientações editoriais e envie seu manuscrito para triagem.</p>
-          <Link className="footer-submit-link" href="/submeter">Submeter artigo <span aria-hidden="true">↗</span></Link>
+          <TextLink className="footer-submit-link" href="/submeter" arrow="up-right">Submeter artigo</TextLink>
         </div>
       </div>
       <div className="footer-bottom">

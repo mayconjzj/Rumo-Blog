@@ -1,26 +1,32 @@
-# Rumo Blog — arquitetura
+# Revista Rumo — arquitetura do projeto
 
 ## Camadas
 
-- **Interface (app/, components/)**: páginas e componentes React. Não acessam o Neon nem executam SQL.
-- **Controladores (app/admin/actions.ts)**: Server Actions do Next.js. Verificam a identidade do administrador, traduzem formulários em comandos de aplicação e cuidam de redirects/revalidação de cache.
-- **Aplicação/domínio (lib/server/blog-service.ts)**: regras de negócio, normalização de slug, validação do conteúdo e operações de criação, edição, publicação e exclusão.
-- **Persistência (lib/server/blog-repository.ts)**: contrato BlogRepository e implementação NeonBlogRepository. Todo SQL e acesso ao Neon ficam nesta camada.
-- **Tipos de domínio (lib/blog-types.ts)**: tipos compartilhados, sem dependências de infraestrutura.
-- **Fachada de leitura (lib/blogs.ts)**: API de leitura para páginas server-side; delega ao serviço de aplicação.
+- **Interface (app/ e componentes React):** páginas, componentes visuais, formulários e estados de interface.
+- **Controladores (rotas de API e Server Actions):** recebem requisições, verificam identidade e permissão, chamam serviços e traduzem resultados em respostas HTTP ou redirecionamentos.
+- **Serviços de aplicação (lib/server/):** regras de negócio, validação de comandos e coordenação de fluxos de submissão, avaliação e publicação.
+- **Persistência (módulos *repository*):** consultas SQL e acesso ao Neon. Páginas não devem executar SQL diretamente.
+- **Autenticação (lib/auth/):** configuração compartilhada do Neon Auth para cliente e servidor.
+- **Tipos de domínio:** contratos explícitos entre camadas, sem dependência de infraestrutura quando possível.
 
-## Princípios SOLID aplicados
+## Diretrizes SOLID
 
-- **S — Responsabilidade única**: páginas cuidam da apresentação, ações cuidam do fluxo, serviço cuida das regras e repositório cuida do banco.
-- **O — Aberto/fechado**: uma nova implementação de persistência pode ser adicionada sem reescrever as regras do serviço.
-- **L — Substituição de Liskov**: qualquer implementação de BlogRepository deve respeitar o mesmo contrato e semântica.
-- **I — Segregação de interfaces**: o contrato do repositório é tipado por operações explícitas do blog, sem expor o cliente SQL à interface.
-- **D — Inversão de dependência**: BlogService recebe a abstração BlogRepository; a implementação Neon é injetada no ponto de composição.
+- **Responsabilidade única:** cada módulo tem um motivo principal para mudar. A interface não deve executar consultas SQL nem decidir regras editoriais.
+- **Aberto/fechado:** novas implementações de persistência devem ser possíveis sem reescrever regras de aplicação.
+- **Substituição de Liskov:** implementações alternativas devem manter a semântica dos contratos.
+- **Segregação de interfaces:** consumidores dependem apenas das operações que utilizam.
+- **Inversão de dependência:** regras de aplicação não devem depender de detalhes de conexão ou de componentes visuais.
 
-## Segurança e limites
+## Segurança
 
-- Os módulos de backend usam server-only, impedindo importação acidental para componentes client-side.
-- Cada Server Action verifica novamente a sessão e o e-mail permitido pelo ADMIN_EMAIL; ocultar botões na interface não é controle de acesso.
-- O conteúdo continua compatível com artigos antigos em texto puro e com o formato estruturado de seções.
-- O limite de conteúdo permanece em 50.000 caracteres.
-- O projeto ainda não possui uma suíte de testes automatizados; build/lint e os fluxos de CRUD precisam ser verificados após a refatoração.
+- Módulos exclusivos do servidor usam `server-only`.
+- Operações administrativas verificam a sessão e comparam o e-mail normalizado com `ADMIN_EMAIL` no servidor.
+- PDFs não publicados só podem ser obtidos por administradores ou avaliadores autorizados.
+- Validação no cliente melhora a experiência, mas nunca substitui a validação no servidor.
+- Mudanças de estado editorial e seus eventos de auditoria devem ser persistidos na mesma instrução SQL para evitar divergência entre estado e histórico.
+
+## Verificação
+
+Execute `npm run check` para ESLint e verificação de tipos. Execute `npm run format:check` para verificar a formatação e `npm run format` para aplicar o padrão configurado. Execute `npm run build` separadamente com as variáveis de ambiente configuradas. A formatação do repositório inteiro ainda é uma etapa pendente desta refatoração; não considere o resultado de `format:check` garantido antes dessa etapa.
+
+A refatoração é incremental. Não marque uma etapa como concluída até que os comandos de qualidade e os fluxos funcionais relevantes tenham sido executados com sucesso.
