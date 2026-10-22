@@ -17,6 +17,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
    <label htmlFor="community-email">E-mail</label><input id="community-email" name="email" type="email" autoComplete="email" required />
    <label htmlFor="community-password">Senha</label><input id="community-password" name="password" type="password" autoComplete="current-password" required />
    <button type="submit">Entrar ↗</button></form>
+  <p className="community-auth-switch"><Link href="/forgot-password">Esqueci minha senha</Link></p>
   <p className="community-auth-switch">Ainda não tem conta? <Link href={returnTo !== "/pesquisas" ? `/sign-up?returnTo=${encodeURIComponent(returnTo)}` : "/sign-up"}>Criar conta</Link></p>
   <Link href="/pesquisas" className="community-auth-back">← Voltar às pesquisas</Link>
  </div></main>;
