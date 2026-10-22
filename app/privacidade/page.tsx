@@ -156,6 +156,7 @@ export default function PrivacyPolicy() {
               o artigo estiver disponível ou pelo período necessário à integridade
               do registro público, com revisão de pedidos de correção ou remoção
               conforme a legislação e o contexto.
+            </li>
             <li>
               <strong>Artigos publicados e metadados bibliográficos:</strong>{" "}
               enquanto a publicação permanecer disponível, para preservar o
