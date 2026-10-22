@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
-import { auth } from "@/lib/auth/server";
+import { getCommunityAccess } from "@/lib/server/community-access";
 export const runtime="nodejs"; export const dynamic="force-dynamic";
 const MAX_PDF_BYTES=4*1024*1024; const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function POST(request:Request) {
  try {
-  const { data: session } = await auth.getSession();
-  if (!session?.user) return NextResponse.json({error:"Entre na sua conta para submeter um artigo.",loginUrl:"/login?returnTo=%2Fsubmeter"},{status:401,headers:{"Cache-Control":"no-store"}});
+  const access = await getCommunityAccess();
+  if (access.status === "anonymous") return NextResponse.json({ error: "Entre na sua conta para submeter um artigo.", loginUrl: "/login?returnTo=%2Fsubmeter" }, { status: 401, headers: { "Cache-Control": "no-store" } });
+  if (access.status === "disabled") return NextResponse.json({ error: "Seu perfil comunitário está desativado. Entre em contato com a equipe editorial." }, { status: 403, headers: { "Cache-Control": "no-store" } });
   const data=await request.formData();
   if(String(data.get("website")??"").trim())return NextResponse.json({error:"Não foi possível validar o envio."},{status:400});
   if(!data.get("confirmOriginal"))return NextResponse.json({error:"Confirme a declaração de autoria."},{status:400});
