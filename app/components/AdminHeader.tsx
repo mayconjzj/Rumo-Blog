@@ -13,6 +13,7 @@ export default function AdminHeader({ email }: { email: string }) {
         <nav className="admin-desktop-nav" aria-label="Navegação administrativa">
           <Link href="/admin/metricas">Métricas</Link>
           <Link href="/admin/submissoes">Submissões</Link>
+          <Link href="/admin/usuarios">Usuários</Link>
           <Link href="/">Ver site ↗</Link>
         </nav>
         <details className="admin-mobile-menu">
@@ -20,6 +21,7 @@ export default function AdminHeader({ email }: { email: string }) {
           <nav className="admin-mobile-panel" aria-label="Navegação administrativa móvel">
             <Link href="/admin/metricas">Métricas</Link>
             <Link href="/admin/submissoes">Submissões científicas</Link>
+            <Link href="/admin/usuarios">Gerenciar usuários</Link>
             <Link href="/">Ver site ↗</Link>
           </nav>
         </details>
