@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/server";
+import { getCommunityAccess } from "@/lib/server/community-access";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import SubmissionForm from "./submission-form";
@@ -24,8 +24,9 @@ const scientificAreas = [
 ];
 
 export default async function SubmitPage() {
-  const { data: session } = await auth.getSession();
-  if (!session?.user) redirect("/login?returnTo=%2Fsubmeter");
+  const access = await getCommunityAccess();
+  if (access.status === "anonymous") redirect("/login?returnTo=%2Fsubmeter");
+  if (access.status === "disabled") redirect("/pesquisas?perfil=desativado");
 
   return (
     <>
