@@ -34,7 +34,6 @@ export default async function SignInPage({
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
   if (data?.user) {
-    if (data.user.emailVerified !== true) redirect("/verificar-email");
     redirect(adminEmail && email === adminEmail ? "/admin" : returnTo);
   }
 
@@ -59,9 +58,6 @@ export default async function SignInPage({
       <CommunityLoginForm returnTo={returnTo} />
       <p className="login-subtitle">
         <Link href="/forgot-password">Esqueci minha senha</Link>
-      </p>
-      <p className="login-subtitle">
-        Precisa confirmar seu e-mail? <Link href="/verificar-email">Enviar código</Link>
       </p>
       <p className="login-subtitle">
         Ainda não tem conta?{" "}
