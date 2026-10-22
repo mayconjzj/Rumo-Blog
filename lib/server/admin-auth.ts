@@ -5,6 +5,6 @@ export async function requireAdmin(): Promise<{ email: string }> {
  const { data: session } = await auth.getSession();
  const email = session?.user?.email?.trim().toLowerCase();
  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
- if (!session?.user || !adminEmail || email !== adminEmail) redirect("/admin/login");
+ if (!session?.user || !adminEmail || email !== adminEmail) redirect("/login");
  return { email: email ?? "" };
 }
