@@ -44,3 +44,49 @@ export async function enableCommunityProfile(formData: FormData) {
   revalidatePath("/admin/usuarios");
   redirect("/admin/usuarios?sucesso=reativado");
 }
+
+ 
+export async function deleteUserAccount(formData: FormData) {
+  const { email: adminEmail } = await requireAdmin();
+  const userId = String(formData.get("userId") ?? "").trim();
+
+  if (!uuidPattern.test(userId)) redirect("/admin/usuarios?erro=usuario");
+  if (!process.env.DATABASE_URL) redirect("/admin/usuarios?erro=banco");
+
+  const sql = neon(process.env.DATABASE_URL);
+
+  try {
+    const rows = (await sql.query(
+      'SELECT id, email FROM neon_auth."user" WHERE id = $1 LIMIT 1',
+      [userId],
+    )) as { id: string; email: string }[];
+
+    const user = rows[0];
+    if (!user) redirect("/admin/usuarios?erro=usuario");
+
+    // Never allow the administrator to remove their own admin identity here.
+    if (user.email.trim().toLowerCase() === adminEmail.toLowerCase()) {
+      redirect("/admin/usuarios?erro=nao-pode-excluir-admin");
+    }
+
+    // Neon Auth cascades this deletion to its login sessions and linked auth
+    // accounts. Research submissions remain as editorial records.
+    await sql.query('DELETE FROM neon_auth."user" WHERE id = $1', [userId]);
+  } catch (error) {
+    // Next.js redirect() throws internally; preserve redirect control flow.
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+    console.error("Failed to delete Neon Auth user", error);
+    redirect("/admin/usuarios?erro=banco");
+  }
+
+  revalidatePath("/admin/usuarios");
+  redirect("/admin/usuarios?sucesso=excluido");
+}
