@@ -41,6 +41,10 @@ button, input, textarea { font: inherit; }
 .public-auth-actions { display: flex; align-items: center; gap: 9px; }
 .public-login-link { display: inline-flex; align-items: center; justify-content: center; padding: 11px 13px; color: var(--navy); border: 1px solid #d9e0e7; font-size: 12px; font-weight: 700; transition: background .2s, color .2s; }
 .public-login-link:hover { background: #f1f5f9; }
+.public-logout-button { cursor: pointer; background: #fff; font: inherit; }
+.public-auth-actions form { margin: 0; }
+.public-auth-actions form button { min-height: 39px; }
+.public-logout-button:hover { color: #fff; background: var(--navy); }
 .public-signup-link { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 14px; color: #fff; background: var(--navy); font-size: 12px; font-weight: 700; transition: background .2s; }
 .public-signup-link:hover { background: #195AB4; }
 .public-signup-link span { color: var(--gold); font-size: 16px; }
@@ -48,6 +52,10 @@ button, input, textarea { font: inherit; }
 .mobile-auth-actions a { display: flex; align-items: center; justify-content: center; padding: 12px 8px; text-align: center; font-weight: 700; }
 .mobile-auth-actions .mobile-login-link { border: 1px solid #d9e0e7; }
 .mobile-auth-actions .mobile-signup-link { color: #fff; background: var(--navy); }
+.mobile-auth-actions form { min-width: 0; }
+.mobile-auth-actions .mobile-logout-button { width: 100%; border: 1px solid #d9e0e7; color: var(--navy); background: #fff; cursor: pointer; font-weight: 700; }
+.mobile-auth-actions .mobile-logout-button:hover { color: #fff; background: var(--navy); }
+.mobile-auth-actions:has(.mobile-logout-button) { grid-template-columns: 1fr; }
 
 .hero { overflow: hidden; color: #fff; background: var(--navy); }
 .hero-grid { min-height: 510px; display: grid; grid-template-columns: 1fr .9fr; align-items: center; gap: 42px; padding-block: 66px; }
@@ -655,9 +663,9 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .community-review-form h3, .community-review-list > h3 { margin: 0; color: #05132A; font-family: Manrope, sans-serif; font-size: 19px; }
 .community-review-form label, .community-comment-label { display: grid; gap: 7px; color: #34485d; font-size: 12px; font-weight: 700; }
 .community-score-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.community-review-form select, .community-review-form textarea, .community-auth-form input { width: 100%; min-width: 0; padding: 12px; border: 1px solid #d3dce5; border-radius: 6px; color: #17283b; background: #fff; font-size: 13px; }
+.community-review-form select, .community-review-form textarea, .community-auth-form input { width: 100%; min-width: 0; padding: 12px; border: 1px solid #d3dce5; border-radius: 0; color: #17283b; background: #fff; font-size: 13px; }
 .community-review-form textarea { resize: vertical; line-height: 1.7; }
-.community-review-form button, .community-auth-form button { justify-self: start; padding: 13px 16px; border: 0; border-radius: 6px; color: #fff; background: #05132A; cursor: pointer; font-size: 12px; font-weight: 800; }
+.community-review-form button, .community-auth-form button { justify-self: start; padding: 13px 16px; border: 0; border-radius: 0; color: #fff; background: var(--navy); cursor: pointer; font-size: 12px; font-weight: 800; }
 .community-review-form button:hover, .community-auth-form button:hover { background: #195AB4; }
 .community-review-note { color: #687789; font-size: 11px; line-height: 1.8; }
 .community-review-message { margin: 18px 0; padding: 13px 15px; border-left: 3px solid #195AB4; background: #f1f6fd; color: #34485d; font-size: 12px; line-height: 1.7; }
@@ -672,8 +680,8 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .community-review-card-top span, .community-review-scores { color: #687789; font-size: 10px; line-height: 1.8; }
 .community-review-card > p:not(.community-review-recommendation) { margin: 12px 0; color: #34485d; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .community-review-recommendation { display: inline-flex; margin: 10px 0 0; padding: 5px 8px; border-radius: 4px; color: #195AB4; background: #eef5ff; font-size: 10px; font-weight: 800; }
-.community-auth-page { display: grid; place-items: center; min-height: 100vh; padding: 28px 18px; background: #f4f6f8; color: #17283b; }
-.community-auth-panel { width: min(100%, 520px); padding: clamp(24px, 5vw, 42px); border: 1px solid #e1e6eb; border-radius: 12px; background: #fff; box-shadow: 0 18px 50px #05132a0a; }
+.community-auth-page { display: grid; place-items: center; min-height: 100vh; padding: 28px 18px; background: #fff; color: var(--ink); }
+.community-auth-panel { width: min(100%, 520px); padding: clamp(24px, 5vw, 42px); border: 1px solid var(--line); border-radius: 0; background: #fff; box-shadow: none; }
 .community-auth-brand { color: #05132A; font-family: Manrope, sans-serif; font-size: 25px; font-weight: 800; letter-spacing: -.06em; }
 .community-auth-brand span { color: #195AB4; }
 .community-auth-eyebrow { margin: 32px 0 10px; color: #195AB4; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
@@ -684,7 +692,7 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .community-auth-form button { margin-top: 12px; }
 .community-auth-switch, .community-auth-back { display: block; margin-top: 20px; color: #687789; font-size: 12px; }
 .community-auth-switch a, .community-auth-back { color: #195AB4; font-weight: 800; }
-.community-auth-error, .community-auth-success { padding: 12px; border-radius: 6px; font-size: 12px; line-height: 1.7; }
+.community-auth-error, .community-auth-success { padding: 12px; border-radius: 0; font-size: 12px; line-height: 1.7; }
 .community-auth-error { color: #8a2630; background: #fff0f0; }
 .community-auth-success { color: #216c49; background: #effaf4; }
 @media (max-width: 560px) { .community-score-grid { grid-template-columns: 1fr; } .community-reviews-section { padding: 18px; } .community-review-form { padding: 16px; } .community-reviews-summary > div { flex: 1; min-width: 130px; } }
