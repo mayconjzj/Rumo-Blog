@@ -696,3 +696,17 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .community-auth-error { color: #8a2630; background: #fff0f0; }
 .community-auth-success { color: #216c49; background: #effaf4; }
 @media (max-width: 560px) { .community-score-grid { grid-template-columns: 1fr; } .community-reviews-section { padding: 18px; } .community-review-form { padding: 16px; } .community-reviews-summary > div { flex: 1; min-width: 130px; } }
+
+.community-auth-resend {
+  align-self: flex-start;
+  padding: 6px 0;
+  border: 0;
+  color: #195AB4;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+}
+.community-auth-resend:hover { color: #0B2859; text-decoration: underline; }
+.community-auth-resend:disabled { cursor: wait; opacity: .55; }
