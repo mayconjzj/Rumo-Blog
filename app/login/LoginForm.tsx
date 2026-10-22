@@ -71,6 +71,7 @@ export default function LoginForm() {
               {state.error && <p className="login-message" role="status">{state.error}</p>}
             </form>
 
+            <p className="login-subtitle"><Link href="/forgot-password">Esqueci minha senha</Link></p>
             <div className="login-security-note">
               <span className="security-symbol" aria-hidden="true">i</span>
               <p>Área destinada somente a pessoas autorizadas. Nunca compartilhe suas credenciais.</p>
