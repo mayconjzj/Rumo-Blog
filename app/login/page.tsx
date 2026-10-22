@@ -5,7 +5,7 @@ import { communitySignInAction } from "../comunidade/actions";
 export const metadata = { title: "Entrar | Revista Rumo", robots: { index: false, follow: false } };
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ erro?: string; cadastro?: string; returnTo?: string }> }) {
  const query = await searchParams;
- const returnTo = query.returnTo?.startsWith("/pesquisas/") && !query.returnTo.startsWith("//") ? query.returnTo : "/pesquisas";
+ const returnTo = query.returnTo === "/submeter" || (query.returnTo?.startsWith("/pesquisas/") && !query.returnTo.startsWith("//")) ? query.returnTo : "/pesquisas";
  const { data: session } = await auth.getSession();
  if (session?.user) redirect(returnTo);
  return <main className="community-auth-page"><div className="community-auth-panel">
