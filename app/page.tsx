@@ -25,7 +25,9 @@ function HeroSection() {
             envie seu manuscrito para avaliação editorial.
           </p>
           <div className="hero-actions">
-            <Button href="/pesquisas" arrow="up-right">Explorar pesquisas</Button>
+            <Button href="/pesquisas" arrow="up-right">
+              Explorar pesquisas
+            </Button>
             <TextLink href="/submeter">Submeta sua pesquisa</TextLink>
           </div>
           <div className="hero-note">
@@ -96,7 +98,16 @@ function PublishedResearchSection({
       aria-labelledby="published-research-title"
     >
       <div className="container">
-        <SectionHeading eyebrow="01 / ARQUIVO CIENTÍFICO" id="published-research-title" title={<>Pesquisas <em>publicadas.</em></>} description="Artigos científicos aceitos, publicados e disponíveis gratuitamente para leitura." />
+        <SectionHeading
+          eyebrow="01 / ARQUIVO CIENTÍFICO"
+          id="published-research-title"
+          title={
+            <>
+              Pesquisas <em>publicadas.</em>
+            </>
+          }
+          description="Artigos científicos aceitos, publicados e disponíveis gratuitamente para leitura."
+        />
 
         {papers.length === 0 ? (
           <div className="published-research-empty">
@@ -227,7 +238,9 @@ function AboutSection() {
           conselho editorial só serão anunciados quando formalmente confirmados.
         </p>
         <div className="hero-actions">
-          <Button href="/pesquisas" arrow="up-right">Ver arquivo científico</Button>
+          <Button href="/pesquisas" arrow="up-right">
+            Ver arquivo científico
+          </Button>
           <TextLink href="/submeter">Submeter pesquisa</TextLink>
         </div>
       </div>

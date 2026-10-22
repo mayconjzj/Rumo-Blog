@@ -78,7 +78,16 @@ export default async function ResearchArchive() {
       <ResearchSiteHeader />
 
       <div className="research-archive-content">
-        <PageIntro backHref="/" backLabel="← Voltar para a página inicial" backClassName="research-back-link" eyebrow="REVISTA RUMO / ARQUIVO CIENTÍFICO" eyebrowClassName="research-eyebrow" title="Pesquisas publicadas" description="Leia e encontre artigos científicos aceitos e publicados pela revista. Pesquise por título, autor ou palavra-chave e filtre por área científica." descriptionClassName="research-intro" />
+        <PageIntro
+          backHref="/"
+          backLabel="← Voltar para a página inicial"
+          backClassName="research-back-link"
+          eyebrow="REVISTA RUMO / ARQUIVO CIENTÍFICO"
+          eyebrowClassName="research-eyebrow"
+          title="Pesquisas publicadas"
+          description="Leia e encontre artigos científicos aceitos e publicados pela revista. Pesquise por título, autor ou palavra-chave e filtre por área científica."
+          descriptionClassName="research-intro"
+        />
 
         {unavailable ? (
           <div className="research-empty">
