@@ -25,7 +25,7 @@ export default function GoogleAuthButton({
         (returnTo.startsWith("/pesquisas/") && !returnTo.startsWith("//"))
           ? returnTo
           : "/pesquisas";
-      const callbackURL = new URL("/login", window.location.origin);
+      const callbackURL = new URL("/auth/callback", window.location.origin);
       callbackURL.searchParams.set("returnTo", safeReturnTo);
 
       const result = await authClient.signIn.social({
