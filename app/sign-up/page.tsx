@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import CommunityAuthShell from "../components/CommunityAuthShell";
 import CommunitySignUpForm from "./CommunitySignUpForm";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export const metadata = {
   title: "Criar conta | Revista Rumo",
@@ -39,7 +40,7 @@ export default async function SignUpPage({
       title="Crie sua conta."
       description="Cadastre-se para avaliar pesquisas científicas e acompanhar suas contribuições na comunidade Rumo."
     >
-      <CommunitySignUpForm returnTo={returnTo} />
+      <div className="google-auth-section">\n        <GoogleAuthButton returnTo={returnTo} label="Criar conta com Google" />\n        <div className="auth-divider"><span>ou cadastre-se com e-mail</span></div>\n      </div>\n      <CommunitySignUpForm returnTo={returnTo} />
 
       <p className="login-subtitle">
         Já tem conta?{" "}
