@@ -626,3 +626,52 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .footer-bottom a { color: #b8c6d6; transition: color .2s; }
 @media (max-width: 900px) { .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 40px; } }
 @media (max-width: 560px) { .footer-main { grid-template-columns: 1fr 1fr; gap: 30px 20px; padding-block: 38px 34px; } .footer-brand-column, .footer-submit-column { grid-column: 1 / -1; } .footer-description { max-width: 380px; } .footer-bottom-inner { align-items: flex-start; flex-direction: column; justify-content: center; gap: 8px; padding-block: 16px; } }
+
+
+/* Avaliação comunitária dos artigos científicos */
+.community-reviews-section { margin-top: 34px; padding: clamp(20px, 4vw, 32px); border: 1px solid #e1e6eb; background: #fff; }
+.community-reviews-heading h2 { margin: 8px 0 10px; color: #05132A; font-family: Manrope, sans-serif; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.035em; }
+.community-reviews-heading > p:last-child, .community-review-form > p, .community-review-signin p { color: #687789; font-size: 13px; line-height: 1.8; }
+.community-reviews-eyebrow { margin: 0; color: #195AB4; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.community-reviews-summary { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0; }
+.community-reviews-summary > div { display: flex; flex-direction: column; gap: 4px; min-width: 160px; padding: 16px 18px; border: 1px solid #e1e6eb; background: #f8fafc; }
+.community-reviews-summary strong { color: #05132A; font-family: Manrope, sans-serif; font-size: 26px; }
+.community-reviews-summary strong small { color: #687789; font-size: 13px; }
+.community-reviews-summary span { color: #687789; font-size: 11px; }
+.community-review-form { display: grid; gap: 12px; margin: 22px 0 30px; padding: 22px; border: 1px solid #dce3ea; background: #f8fafc; }
+.community-review-form h3, .community-review-list > h3 { margin: 0; color: #05132A; font-family: Manrope, sans-serif; font-size: 19px; }
+.community-review-form label, .community-comment-label { display: grid; gap: 7px; color: #34485d; font-size: 12px; font-weight: 700; }
+.community-score-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.community-review-form select, .community-review-form textarea, .community-auth-form input { width: 100%; min-width: 0; padding: 12px; border: 1px solid #d3dce5; border-radius: 6px; color: #17283b; background: #fff; font-size: 13px; }
+.community-review-form textarea { resize: vertical; line-height: 1.7; }
+.community-review-form button, .community-auth-form button { justify-self: start; padding: 13px 16px; border: 0; border-radius: 6px; color: #fff; background: #05132A; cursor: pointer; font-size: 12px; font-weight: 800; }
+.community-review-form button:hover, .community-auth-form button:hover { background: #195AB4; }
+.community-review-note { color: #687789; font-size: 11px; line-height: 1.8; }
+.community-review-message { margin: 18px 0; padding: 13px 15px; border-left: 3px solid #195AB4; background: #f1f6fd; color: #34485d; font-size: 12px; line-height: 1.7; }
+.community-review-message.success { border-left-color: #26865b; background: #effaf4; }
+.community-review-signin { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 22px 0 30px; padding: 20px; border: 1px solid #e1e6eb; background: #f8fafc; }
+.community-review-signin p { flex-basis: 100%; margin: 0; }
+.community-review-signin a { color: #195AB4; font-size: 12px; font-weight: 800; }
+.community-review-list { display: grid; gap: 13px; margin-top: 30px; }
+.community-review-card { padding: 19px; border: 1px solid #e1e6eb; border-radius: 8px; background: #fff; }
+.community-review-card-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 18px; }
+.community-review-card-top strong { color: #05132A; font-size: 13px; }
+.community-review-card-top span, .community-review-scores { color: #687789; font-size: 10px; line-height: 1.8; }
+.community-review-card > p:not(.community-review-recommendation) { margin: 12px 0; color: #34485d; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.community-review-recommendation { display: inline-flex; margin: 10px 0 0; padding: 5px 8px; border-radius: 4px; color: #195AB4; background: #eef5ff; font-size: 10px; font-weight: 800; }
+.community-auth-page { display: grid; place-items: center; min-height: 100vh; padding: 28px 18px; background: #f4f6f8; color: #17283b; }
+.community-auth-panel { width: min(100%, 520px); padding: clamp(24px, 5vw, 42px); border: 1px solid #e1e6eb; border-radius: 12px; background: #fff; box-shadow: 0 18px 50px #05132a0a; }
+.community-auth-brand { color: #05132A; font-family: Manrope, sans-serif; font-size: 25px; font-weight: 800; letter-spacing: -.06em; }
+.community-auth-brand span { color: #195AB4; }
+.community-auth-eyebrow { margin: 32px 0 10px; color: #195AB4; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.community-auth-panel h1 { margin: 0 0 12px; color: #05132A; font-family: Manrope, sans-serif; font-size: clamp(29px, 5vw, 38px); line-height: 1.2; letter-spacing: -.04em; }
+.community-auth-copy { color: #687789; font-size: 13px; line-height: 1.8; }
+.community-auth-form { display: grid; gap: 9px; margin-top: 24px; }
+.community-auth-form label { margin-top: 8px; color: #34485d; font-size: 12px; font-weight: 700; }
+.community-auth-form button { margin-top: 12px; }
+.community-auth-switch, .community-auth-back { display: block; margin-top: 20px; color: #687789; font-size: 12px; }
+.community-auth-switch a, .community-auth-back { color: #195AB4; font-weight: 800; }
+.community-auth-error, .community-auth-success { padding: 12px; border-radius: 6px; font-size: 12px; line-height: 1.7; }
+.community-auth-error { color: #8a2630; background: #fff0f0; }
+.community-auth-success { color: #216c49; background: #effaf4; }
+@media (max-width: 560px) { .community-score-grid { grid-template-columns: 1fr; } .community-reviews-section { padding: 18px; } .community-review-form { padding: 16px; } .community-reviews-summary > div { flex: 1; min-width: 130px; } }
