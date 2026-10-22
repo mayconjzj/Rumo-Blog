@@ -6,6 +6,7 @@ import { neon } from "@neondatabase/serverless";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import ResearchFilters, { type ResearchPaper } from "./ResearchFilters";
+import PageIntro from "../components/ui/PageIntro";
 
 export const metadata: Metadata = {
   title: "Arquivo de pesquisas científicas",
@@ -77,15 +78,7 @@ export default async function ResearchArchive() {
       <ResearchSiteHeader />
 
       <div className="research-archive-content">
-        <Link href="/" className="research-back-link">
-          ← Voltar para a página inicial
-        </Link>
-        <p className="research-eyebrow">REVISTA RUMO / ARQUIVO CIENTÍFICO</p>
-        <h1>Pesquisas publicadas</h1>
-        <p className="research-intro">
-          Leia e encontre artigos científicos aceitos e publicados pela revista.
-          Pesquise por título, autor ou palavra-chave e filtre por área científica.
-        </p>
+        <PageIntro backHref="/" backLabel="← Voltar para a página inicial" backClassName="research-back-link" eyebrow="REVISTA RUMO / ARQUIVO CIENTÍFICO" eyebrowClassName="research-eyebrow" title="Pesquisas publicadas" description="Leia e encontre artigos científicos aceitos e publicados pela revista. Pesquise por título, autor ou palavra-chave e filtre por área científica." descriptionClassName="research-intro" />
 
         {unavailable ? (
           <div className="research-empty">

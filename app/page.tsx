@@ -1,17 +1,12 @@
 import Link from "next/link";
+import Button from "./components/ui/Button";
+import TextLink from "./components/ui/TextLink";
+import SectionHeading from "./components/ui/SectionHeading";
 import HomeSiteHeader from "./components/HomeSiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import { listLatestPublishedPapers } from "@/lib/server/publication-repository";
 
 export const dynamic = "force-dynamic";
-
-function ArrowIcon() {
-  return (
-    <span aria-hidden="true" className="arrow">
-      ↗
-    </span>
-  );
-}
 
 function HeroSection() {
   return (
@@ -30,12 +25,8 @@ function HeroSection() {
             envie seu manuscrito para avaliação editorial.
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/pesquisas">
-              Explorar pesquisas <ArrowIcon />
-            </Link>
-            <Link className="text-link" href="/submeter">
-              Submeta sua pesquisa <span aria-hidden="true">→</span>
-            </Link>
+            <Button href="/pesquisas" arrow="up-right">Explorar pesquisas</Button>
+            <TextLink href="/submeter">Submeta sua pesquisa</TextLink>
           </div>
           <div className="hero-note">
             <span className="note-line" />
@@ -105,18 +96,7 @@ function PublishedResearchSection({
       aria-labelledby="published-research-title"
     >
       <div className="container">
-        <div className="section-heading">
-          <div>
-            <div className="section-number">01 / ARQUIVO CIENTÍFICO</div>
-            <h2 id="published-research-title">
-              Pesquisas <em>publicadas.</em>
-            </h2>
-          </div>
-          <p>
-            Artigos científicos aceitos, publicados e disponíveis gratuitamente
-            para leitura.
-          </p>
-        </div>
+        <SectionHeading eyebrow="01 / ARQUIVO CIENTÍFICO" id="published-research-title" title={<>Pesquisas <em>publicadas.</em></>} description="Artigos científicos aceitos, publicados e disponíveis gratuitamente para leitura." />
 
         {papers.length === 0 ? (
           <div className="published-research-empty">
@@ -126,7 +106,7 @@ function PublishedResearchSection({
               for aprovado e publicado pela equipe editorial, ele aparecerá
               aqui. Submissões em avaliação não são públicas.
             </p>
-            <Link href="/pesquisas">Acessar o arquivo científico ↗</Link>
+            <TextLink href="/pesquisas" arrow="up-right">Acessar o arquivo científico</TextLink>
           </div>
         ) : (
           <div className="published-research-grid">
@@ -166,7 +146,7 @@ function PublishedResearchSection({
         )}
 
         <div className="published-research-footer">
-          <Link href="/pesquisas">Ver todas as pesquisas publicadas ↗</Link>
+          <TextLink href="/pesquisas" arrow="up-right">Ver todas as pesquisas publicadas</TextLink>
         </div>
       </div>
     </section>
@@ -220,10 +200,7 @@ function EditorialProcessSection() {
             </p>
           </article>
         </div>
-        <Link className="text-link journal-process-link" href="/avaliacao-por-pares">
-          Leia como funciona a avaliação por pares{" "}
-          <span aria-hidden="true">→</span>
-        </Link>
+        <TextLink className="journal-process-link" href="/avaliacao-por-pares">Leia como funciona a avaliação por pares</TextLink>
       </div>
     </section>
   );
@@ -250,12 +227,8 @@ function AboutSection() {
           conselho editorial só serão anunciados quando formalmente confirmados.
         </p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/pesquisas">
-            Ver arquivo científico <ArrowIcon />
-          </Link>
-          <Link className="text-link" href="/submeter">
-            Submeter pesquisa <span aria-hidden="true">→</span>
-          </Link>
+          <Button href="/pesquisas" arrow="up-right">Ver arquivo científico</Button>
+          <TextLink href="/submeter">Submeter pesquisa</TextLink>
         </div>
       </div>
     </section>
