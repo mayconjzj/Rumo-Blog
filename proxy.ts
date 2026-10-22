@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth/server";
 export default auth.middleware({ loginUrl: "/login" });
 
 export const config = {
-  // Keep the dedicated admin login reachable; all other admin routes
-  // are protected again by requireAdmin() at the page/action/API boundary.
-  matcher: ["/login", "/admin", "/admin/((?!login).*)"],
+  // The OAuth landing route must pass through Neon Auth middleware so it can
+  // exchange the verifier and attach the session cookie before rendering.
+  matcher: ["/auth/callback", "/login", "/admin", "/admin/((?!login).*)"],
 };
