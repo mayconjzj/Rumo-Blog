@@ -23,11 +23,12 @@ export async function communitySignUpAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim().slice(0, 100);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const returnTo = safeReturnTo(formData.get("returnTo"));
   if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 10) {
     redirect("/comunidade/cadastro?erro=campos");
   }
 
   const { error } = await auth.signUp.email({ name, email, password });
   if (error) redirect("/comunidade/cadastro?erro=cadastro");
-  redirect("/comunidade/entrar?cadastro=ok");
+  redirect(`/comunidade/entrar?cadastro=ok&returnTo=${encodeURIComponent(returnTo)}`);
 }
