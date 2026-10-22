@@ -43,7 +43,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     }
 
-    return new Response(pdf, {
+    return new Response(new Uint8Array(pdf), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="manuscrito-${submissionId}.pdf"`,
