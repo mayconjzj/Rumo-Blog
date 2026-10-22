@@ -12,26 +12,91 @@ export default async function CommunitySignUp({
   searchParams: Promise<{ erro?: string; returnTo?: string }>;
 }) {
   const query = await searchParams;
+  const returnTo =
+    query.returnTo?.startsWith("/pesquisas/") && !query.returnTo.startsWith("//")
+      ? query.returnTo
+      : "/pesquisas";
+
   return (
     <main className="community-auth-page">
       <div className="community-auth-panel">
-        <Link href="/" className="community-auth-brand">RUMO<span>.</span></Link>
+        <Link href="/" className="community-auth-brand">
+          RUMO<span>.</span>
+        </Link>
         <p className="community-auth-eyebrow">COMUNIDADE CIENTÍFICA</p>
         <h1>Crie sua conta.</h1>
-        <p className="community-auth-copy">Uma conta permite publicar uma avaliação por artigo e manter o histórico das suas contribuições. O cadastro não comprova, por si só, formação acadêmica ou qualificação científica.</p>
-        {query.erro && <p className="community-auth-error" role="alert">Informe um nome, e-mail válido e senha com pelo menos 10 caracteres. Se o problema continuar, tente outro e-mail.</p>}
+        <p className="community-auth-copy">
+          Crie uma conta para avaliar artigos científicos e acompanhar suas
+          contribuições. O cadastro não comprova, por si só, formação acadêmica
+          ou qualificação científica.
+        </p>
+
+        {query.erro && (
+          <p className="community-auth-error" role="alert">
+            {query.erro === "senha"
+              ? "As senhas não coincidem. Confira os dois campos."
+              : query.erro === "cadastro"
+                ? "Não foi possível criar a conta. Verifique os dados ou tente outro e-mail."
+                : "Informe um nome válido, e-mail e senha com pelo menos 10 caracteres."}
+          </p>
+        )}
+
         <form action={communitySignUpAction} className="community-auth-form">
-          <input type="hidden" name="returnTo" value={query.returnTo?.startsWith("/pesquisas/") ? query.returnTo : "/pesquisas"} />
+          <input type="hidden" name="returnTo" value={returnTo} />
+
           <label htmlFor="community-name">Nome público</label>
-          <input id="community-name" name="name" autoComplete="name" minLength={2} maxLength={100} required />
+          <input
+            id="community-name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            minLength={2}
+            maxLength={100}
+            required
+          />
+
           <label htmlFor="community-email">E-mail</label>
-          <input id="community-email" name="email" type="email" autoComplete="email" required />
+          <input
+            id="community-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            maxLength={254}
+            required
+          />
+
           <label htmlFor="community-password">Senha (mínimo 10 caracteres)</label>
-          <input id="community-password" name="password" type="password" autoComplete="new-password" minLength={10} required />
+          <input
+            id="community-password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            minLength={10}
+            required
+          />
+
+          <label htmlFor="community-confirm-password">Confirme a senha</label>
+          <input
+            id="community-confirm-password"
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            minLength={10}
+            required
+          />
+
           <button type="submit">Criar conta ↗</button>
         </form>
-        <p className="community-auth-switch">Já tem conta? <Link href="/comunidade/entrar">Entrar</Link></p>
-        <Link href="/pesquisas" className="community-auth-back">← Voltar às pesquisas</Link>
+
+        <p className="community-auth-switch">
+          Já tem conta?{" "}
+          <Link href={`/comunidade/entrar?returnTo=${encodeURIComponent(returnTo)}`}>
+            Entrar
+          </Link>
+        </p>
+        <Link href="/pesquisas" className="community-auth-back">
+          ← Voltar às pesquisas
+        </Link>
       </div>
     </main>
   );

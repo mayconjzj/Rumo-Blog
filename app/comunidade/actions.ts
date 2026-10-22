@@ -5,7 +5,9 @@ import { auth } from "@/lib/auth/server";
 
 function safeReturnTo(value: FormDataEntryValue | null): string {
   const path = String(value ?? "");
-  return path.startsWith("/pesquisas/") && !path.startsWith("//") ? path : "/pesquisas";
+  return path.startsWith("/pesquisas/") && !path.startsWith("//")
+    ? path
+    : "/pesquisas";
 }
 
 export async function communitySignInAction(formData: FormData) {
@@ -23,12 +25,29 @@ export async function communitySignUpAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim().slice(0, 100);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
   const returnTo = safeReturnTo(formData.get("returnTo"));
-  if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 10) {
-    redirect("/comunidade/cadastro?erro=campos");
+  const encodedReturnTo = encodeURIComponent(returnTo);
+
+  if (
+    name.length < 2 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+    email.length > 254 ||
+    password.length < 10
+  ) {
+    redirect(`/comunidade/cadastro?erro=campos&returnTo=${encodedReturnTo}`);
+  }
+
+  if (password !== confirmPassword) {
+    redirect(`/comunidade/cadastro?erro=senha&returnTo=${encodedReturnTo}`);
   }
 
   const { error } = await auth.signUp.email({ name, email, password });
-  if (error) redirect("/comunidade/cadastro?erro=cadastro");
-  redirect(`/comunidade/entrar?cadastro=ok&returnTo=${encodeURIComponent(returnTo)}`);
+  if (error) {
+    redirect(`/comunidade/cadastro?erro=cadastro&returnTo=${encodedReturnTo}`);
+  }
+
+  redirect(
+    `/comunidade/entrar?cadastro=ok&returnTo=${encodedReturnTo}`,
+  );
 }
