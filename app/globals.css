@@ -38,6 +38,16 @@ button, input, textarea { font: inherit; }
 .admin-link:hover { background: var(--navy); color: #fff; }
 .admin-link span { color: var(--gold); font-size: 16px; }
 .mobile-admin { display: none; }
+.public-auth-actions { display: flex; align-items: center; gap: 9px; }
+.public-login-link { display: inline-flex; align-items: center; justify-content: center; padding: 11px 13px; color: var(--navy); border: 1px solid #d9e0e7; font-size: 12px; font-weight: 700; transition: background .2s, color .2s; }
+.public-login-link:hover { background: #f1f5f9; }
+.public-signup-link { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 14px; color: #fff; background: var(--navy); font-size: 12px; font-weight: 700; transition: background .2s; }
+.public-signup-link:hover { background: #195AB4; }
+.public-signup-link span { color: var(--gold); font-size: 16px; }
+.mobile-auth-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 5px 5px; margin-top: 5px; border-top: 1px solid #e1e6eb; }
+.mobile-auth-actions a { display: flex; align-items: center; justify-content: center; padding: 12px 8px; text-align: center; font-weight: 700; }
+.mobile-auth-actions .mobile-login-link { border: 1px solid #d9e0e7; }
+.mobile-auth-actions .mobile-signup-link { color: #fff; background: var(--navy); }
 
 .hero { overflow: hidden; color: #fff; background: var(--navy); }
 .hero-grid { min-height: 510px; display: grid; grid-template-columns: 1fr .9fr; align-items: center; gap: 42px; padding-block: 66px; }
@@ -130,6 +140,8 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   .brand { font-size: 24px; }
   .main-nav { gap: 18px; margin-right: 5px; }
   .admin-link { padding: 10px; gap: 8px; font-size: 11px; }
+  .public-auth-actions { gap: 6px; }
+  .public-login-link, .public-signup-link { padding: 10px 9px; font-size: 11px; }
   .hero-grid { grid-template-columns: 1fr .8fr; gap: 18px; min-height: 480px; }
   .hero h1 { font-size: clamp(34px, 5vw, 46px); }
   .hero-visual { min-height: 280px; }
@@ -153,6 +165,7 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
   .main-nav { gap: 13px; margin: 0 0 0 auto; }
   .main-nav a { font-size: 11px; }
   .admin-link { display: none; }
+  .public-auth-actions { display: none; }
   .mobile-admin { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #d9e0e7; color: var(--navy); }
   .hero-grid { grid-template-columns: 1fr; gap: 12px; padding-block: 52px 35px; }
   .hero h1 { max-width: 500px; margin-top: 22px; font-size: clamp(38px, 10vw, 50px); }
