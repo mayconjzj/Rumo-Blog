@@ -8,7 +8,12 @@ export default function CommunityLoginForm({ returnTo }: { returnTo: string }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form action={communitySignInAction} className="login-form community-login-form">
+    <>
+      <div className="google-auth-section">
+        <GoogleAuthButton returnTo={returnTo} />
+        <div className="auth-divider"><span>ou entre com e-mail</span></div>
+      </div>
+      <form action={communitySignInAction} className="login-form community-login-form">
       <input type="hidden" name="returnTo" value={returnTo} />
       <label htmlFor="community-email">E-mail</label>
       <input
@@ -45,6 +50,7 @@ export default function CommunityLoginForm({ returnTo }: { returnTo: string }) {
       <button className="login-submit" type="submit">
         Entrar <span aria-hidden="true">↗</span>
       </button>
-    </form>
+      </form>
+    </>
   );
 }
