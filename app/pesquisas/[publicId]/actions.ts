@@ -13,7 +13,7 @@ export async function submitCommunityReview(formData: FormData) {
   const accountId = user?.id ? String(user.id) : "";
   const name = user?.name?.trim().slice(0, 100) || email?.split("@")[0] || "Membro da comunidade";
 
-  if (!email || !accountId) redirect(`/comunidade/entrar?returnTo=${encodeURIComponent(`/pesquisas/${publicId}`)}`);
+  if (!email || !accountId) redirect(`/login?returnTo=${encodeURIComponent(`/pesquisas/${publicId}`)}`);
 
   const score = (field: string) => Number(formData.get(field));
   const methodology = score("methodology");
