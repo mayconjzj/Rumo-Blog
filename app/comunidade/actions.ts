@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 function safeReturnTo(value: FormDataEntryValue | null): string {
  const path = String(value ?? "");
- return path.startsWith("/pesquisas/") && !path.startsWith("//") ? path : "/pesquisas";
+ return path === "/submeter" || (path.startsWith("/pesquisas/") && !path.startsWith("//")) ? path : "/pesquisas";
 }
 export async function communitySignInAction(formData: FormData) {
  const email = String(formData.get("email") ?? "").trim().toLowerCase();
