@@ -58,7 +58,11 @@ export default function CommunitySignUpForm({ returnTo }: CommunitySignUpFormPro
         throw new Error("A conta foi criada, mas não foi possível enviar o código. Tente reenviar a confirmação.");
       }
 
-      if (result.data?.session) await authClient.signOut();
+      try {
+        await authClient.signOut();
+      } catch (signOutError) {
+        console.error("Could not end the unverified signup session.", signOutError);
+      }
       setStep("verify");
       setMessage("Enviamos um código de confirmação para seu e-mail. Ele expira em 15 minutos.");
     } catch (cause) {
