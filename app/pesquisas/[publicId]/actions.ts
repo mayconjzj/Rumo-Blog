@@ -2,18 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { neon } from "@neondatabase/serverless";
-import { auth } from "@/lib/auth/server";
+import { getCommunityAccess } from "@/lib/server/community-access";
 
 export async function submitCommunityReview(formData: FormData) {
   const publicId = String(formData.get("publicId") ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(publicId)) redirect("/pesquisas");
-  const { data: session } = await auth.getSession();
-  const user = session?.user;
-  const email = user?.email?.trim().toLowerCase();
-  const accountId = user?.id ? String(user.id) : "";
-  const name = user?.name?.trim().slice(0, 100) || email?.split("@")[0] || "Membro da comunidade";
-
-  if (!email || !accountId) redirect(`/login?returnTo=${encodeURIComponent(`/pesquisas/${publicId}`)}`);
+  const access = await getCommunityAccess();
+  if (access.status === "anonymous") redirect(`/login?returnTo=${encodeURIComponent(`/pesquisas/${publicId}`)}`);
+  if (access.status === "disabled") redirect(`/pesquisas/${publicId}?avaliacao=perfil_desativado#avaliacao-comunidade`);
+  const { email, userId: accountId, name } = access;
 
   const score = (field: string) => Number(formData.get(field));
   const methodology = score("methodology");
