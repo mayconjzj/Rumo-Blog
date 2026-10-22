@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { communitySignInAction } from "../comunidade/actions";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function CommunityLoginForm({ returnTo }: { returnTo: string }) {
   const [showPassword, setShowPassword] = useState(false);
