@@ -40,7 +40,11 @@ export default async function SignUpPage({
       title="Crie sua conta."
       description="Cadastre-se para avaliar pesquisas científicas e acompanhar suas contribuições na comunidade Rumo."
     >
-      <div className="google-auth-section">\n        <GoogleAuthButton returnTo={returnTo} label="Criar conta com Google" />\n        <div className="auth-divider"><span>ou cadastre-se com e-mail</span></div>\n      </div>\n      <CommunitySignUpForm returnTo={returnTo} />
+      <div className="google-auth-section">
+        <GoogleAuthButton returnTo={returnTo} label="Criar conta com Google" />
+        <div className="auth-divider"><span>ou cadastre-se com e-mail</span></div>
+      </div>
+      <CommunitySignUpForm returnTo={returnTo} />
 
       <p className="login-subtitle">
         Já tem conta?{" "}
