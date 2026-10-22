@@ -60,6 +60,11 @@ export default function PrivacyPolicy() {
               quando esses recursos forem utilizados.
             </li>
             <li>
+              <strong>Conta e participação comunitária:</strong> nome público,
+              e-mail da conta, identificador técnico da conta, notas por critério,
+              avaliação geral e comentários publicados pelos membros sobre artigos.
+            </li>
+            <li>
               <strong>Dados técnicos:</strong> informações de acesso,
               dispositivo, navegador, endereço IP e registros de segurança que
               possam ser tratados pelo site ou por seus provedores técnicos.
@@ -106,10 +111,13 @@ export default function PrivacyPolicy() {
           <p>
             Se um artigo for publicado, o nome dos autores, as afiliações e os
             metadados bibliográficos incluídos na publicação poderão ficar
-            disponíveis publicamente. Os arquivos e dados de submissões não
-            publicadas, os contatos privados e os pareceres devem permanecer
-            restritos às pessoas que necessitem deles para suas funções
-            editoriais.
+            disponíveis publicamente. Nas avaliações comunitárias, o nome público
+            do perfil, as notas por critério e o comentário enviado serão exibidos
+            na página do artigo. Não publique dados pessoais ou informações
+            confidenciais no comentário. O e-mail da conta não é exibido na avaliação.
+            Os arquivos e dados de submissões não publicadas, os contatos privados
+            e os pareceres editoriais confidenciais devem permanecer restritos às
+            pessoas que necessitem deles para suas funções.
           </p>
           <p>
             Dados podem ser processados por fornecedores de hospedagem, banco
@@ -143,6 +151,11 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Pareceres e histórico editorial:</strong> até 5 anos.
             </li>
+            <li>
+              <strong>Avaliações e comentários comunitários:</strong> enquanto
+              o artigo estiver disponível ou pelo período necessário à integridade
+              do registro público, com revisão de pedidos de correção ou remoção
+              conforme a legislação e o contexto.
             <li>
               <strong>Artigos publicados e metadados bibliográficos:</strong>{" "}
               enquanto a publicação permanecer disponível, para preservar o
