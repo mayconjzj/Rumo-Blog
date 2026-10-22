@@ -30,12 +30,14 @@ export default async function SignInPage({
   const query = await searchParams;
   const returnTo = getSafeReturnTo(query.returnTo);
   const { data } = await auth.getSession();
+  const email = data?.user?.email?.trim().toLowerCase();
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
-  if (data?.user) redirect(returnTo);
+  if (data?.user) redirect(adminEmail && email === adminEmail ? "/admin" : returnTo);
 
   return (
     <CommunityAuthShell
-      eyebrow="REVISTA CIENTÍFICA"
+      eyebrow="ACESSO À COMUNIDADE"
       title="Entre para avaliar pesquisas."
       description="Use sua conta para publicar avaliações fundamentadas e participar das discussões. Uma avaliação comunitária não equivale a revisão científica formal."
     >
@@ -51,7 +53,7 @@ export default async function SignInPage({
             : "Não foi possível entrar. Confira os dados e tente novamente."}
         </p>
       )}
-      <form action={communitySignInAction} className="community-auth-form">
+      <form action={communitySignInAction} className="login-form community-login-form">
         <input type="hidden" name="returnTo" value={returnTo} />
         <label htmlFor="community-email">E-mail</label>
         <input
@@ -59,6 +61,7 @@ export default async function SignInPage({
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="voce@exemplo.com"
           required
         />
         <label htmlFor="community-password">Senha</label>
@@ -67,28 +70,29 @@ export default async function SignInPage({
           name="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Digite sua senha"
           required
         />
-        <button type="submit">Entrar ↗</button>
+        <button className="login-submit" type="submit">Entrar <span aria-hidden="true">↗</span></button>
       </form>
-      <p className="community-auth-switch">
+      <p className="login-subtitle">
         <Link href="/forgot-password">Esqueci minha senha</Link>
       </p>
-      <p className="community-auth-switch">
+      <p className="login-subtitle">
         Ainda não tem conta?{" "}
         <Link
-          href={
-            returnTo !== "/pesquisas"
-              ? `/sign-up?returnTo=${encodeURIComponent(returnTo)}`
-              : "/sign-up"
-          }
+          href={returnTo !== "/pesquisas" ? `/sign-up?returnTo=${encodeURIComponent(returnTo)}` : "/sign-up"}
         >
           Criar conta
         </Link>
       </p>
-      <Link href="/pesquisas" className="community-auth-back">
+      <Link href="/pesquisas" className="login-home-link">
         ← Voltar às pesquisas
       </Link>
+      <div className="login-security-note">
+        <span className="security-symbol" aria-hidden="true">i</span>
+        <p>Proteja suas credenciais e não compartilhe sua senha.</p>
+      </div>
     </CommunityAuthShell>
   );
 }
