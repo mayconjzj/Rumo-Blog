@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import CommunityAuthShell from "../components/CommunityAuthShell";
-import { communitySignInAction } from "../comunidade/actions";
+import CommunityLoginForm from "./CommunityLoginForm";
 
 export const metadata = {
   title: "Entrar | Revista Rumo",
@@ -53,28 +53,7 @@ export default async function SignInPage({
             : "Não foi possível entrar. Confira os dados e tente novamente."}
         </p>
       )}
-      <form action={communitySignInAction} className="login-form community-login-form">
-        <input type="hidden" name="returnTo" value={returnTo} />
-        <label htmlFor="community-email">E-mail</label>
-        <input
-          id="community-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="voce@exemplo.com"
-          required
-        />
-        <label htmlFor="community-password">Senha</label>
-        <input
-          id="community-password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="Digite sua senha"
-          required
-        />
-        <button className="login-submit" type="submit">Entrar <span aria-hidden="true">↗</span></button>
-      </form>
+      <CommunityLoginForm returnTo={returnTo} />
       <p className="login-subtitle">
         <Link href="/forgot-password">Esqueci minha senha</Link>
       </p>
