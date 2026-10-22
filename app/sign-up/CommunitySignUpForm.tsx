@@ -39,7 +39,20 @@ export default function CommunitySignUpForm({ returnTo }: CommunitySignUpFormPro
         email: email.trim().toLowerCase(),
         password,
       });
-      if (result.error) throw new Error(result.error.message || "Não foi possível criar a conta.");
+      if (result.error) {
+        const errorDetails = `${result.error.code ?? ""} ${result.error.message ?? ""}`.toLowerCase();
+        if (
+          errorDetails.includes("already exists") ||
+          errorDetails.includes("already_exist") ||
+          errorDetails.includes("user exists") ||
+          errorDetails.includes("email exists") ||
+          errorDetails.includes("email is already") ||
+          errorDetails.includes("duplicate")
+        ) {
+          throw new Error("Este e-mail já está cadastrado. Entre na sua conta ou use outro e-mail.");
+        }
+        throw new Error(result.error.message || "Não foi possível criar a conta. Confira os dados e tente novamente.");
+      }
 
       const user = result.data?.user;
       if (!user) throw new Error("A conta não foi criada. Tente novamente.");
