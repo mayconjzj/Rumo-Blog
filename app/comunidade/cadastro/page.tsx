@@ -20,11 +20,8 @@ export default async function CommunitySignUp({
         <h1>Crie sua conta.</h1>
         <p className="community-auth-copy">Uma conta permite publicar uma avaliação por artigo e manter o histórico das suas contribuições. O cadastro não comprova, por si só, formação acadêmica ou qualificação científica.</p>
         {query.erro && <p className="community-auth-error" role="alert">Informe um nome, e-mail válido e senha com pelo menos 10 caracteres. Se o problema continuar, tente outro e-mail.</p>}
-        <form action={async (formData) => {
-          "use server";
-          formData.set("returnTo", query.returnTo ?? "/pesquisas");
-          await communitySignUpAction(formData);
-        }} className="community-auth-form">
+        <form action={communitySignUpAction} className="community-auth-form">
+          <input type="hidden" name="returnTo" value={query.returnTo?.startsWith("/pesquisas/") ? query.returnTo : "/pesquisas"} />
           <label htmlFor="community-name">Nome público</label>
           <input id="community-name" name="name" autoComplete="name" minLength={2} maxLength={100} required />
           <label htmlFor="community-email">E-mail</label>
