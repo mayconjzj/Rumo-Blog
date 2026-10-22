@@ -53,7 +53,7 @@ export default async function SignInPage({
         <p className="community-auth-error" role="alert">
           {query.erro === "campos"
             ? "Preencha e-mail e senha."
-            : "Não foi possível entrar. Confira os dados e tente novamente."}
+            : "Não foi possível entrar. Confira se o e-mail está cadastrado e se a senha está correta. Se ainda não tem conta, crie uma."}
         </p>
       )}
       <CommunityLoginForm returnTo={returnTo} />
