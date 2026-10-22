@@ -13,8 +13,8 @@ export default function VerifyExistingEmailForm() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
-  async function sendCode(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function sendCode(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
     setError("");
     setMessage("");
     setPending(true);
@@ -77,7 +77,7 @@ export default function VerifyExistingEmailForm() {
           <button className="login-submit" type="submit" disabled={pending}>
             {pending ? "Confirmando…" : "Confirmar e-mail"} <span aria-hidden="true">↗</span>
           </button>
-          <button className="community-auth-resend" type="button" onClick={sendCode as unknown as () => void} disabled={pending}>Reenviar código</button>
+          <button className="community-auth-resend" type="button" onClick={() => void sendCode()} disabled={pending}>Reenviar código</button>
           <button className="community-auth-resend" type="button" onClick={() => { setStep("email"); setCode(""); setMessage(""); setError(""); }}>Usar outro e-mail</button>
         </form>
       )}
