@@ -3,8 +3,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { neon } from "@neondatabase/serverless";
 import { siteUrl } from "@/lib/site";
+import { auth } from "@/lib/auth/server";
+import { submitCommunityReview } from "./actions";
 
 export const dynamic = "force-dynamic";
+
+type CommunityReview = {
+  id: number;
+  reviewer_name: string;
+  methodology_score: number;
+  evidence_score: number;
+  clarity_score: number;
+  reproducibility_score: number;
+  recommendation: "supports" | "revision_needed" | "concerns";
+  comment: string;
+  created_at: string | Date;
+};
 
 type PublishedPaper = {
   id: number;
