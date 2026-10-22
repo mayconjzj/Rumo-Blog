@@ -58,6 +58,9 @@ export default async function SignInPage({
         <Link href="/forgot-password">Esqueci minha senha</Link>
       </p>
       <p className="login-subtitle">
+        Precisa confirmar seu e-mail? <Link href="/verificar-email">Enviar código</Link>
+      </p>
+      <p className="login-subtitle">
         Ainda não tem conta?{" "}
         <Link
           href={returnTo !== "/pesquisas" ? `/sign-up?returnTo=${encodeURIComponent(returnTo)}` : "/sign-up"}
