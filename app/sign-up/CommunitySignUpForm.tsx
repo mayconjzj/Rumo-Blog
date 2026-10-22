@@ -74,7 +74,7 @@ export default function CommunitySignUpForm({ returnTo }: CommunitySignUpFormPro
     setError("");
 
     const normalizedCode = code.trim();
-    if (!/^\\d{6}$/.test(normalizedCode)) {
+    if (!/^\d{6}$/.test(normalizedCode)) {
       setError("Digite o código numérico de 6 dígitos recebido por e-mail.");
       return;
     }
@@ -138,7 +138,7 @@ export default function CommunitySignUpForm({ returnTo }: CommunitySignUpFormPro
         <form onSubmit={handleVerify} className="login-form community-login-form">
           <p className="login-subtitle">Digite o código de 6 dígitos enviado para <strong>{email}</strong>.</p>
           <label htmlFor="community-verification-code">Código de confirmação</label>
-          <input id="community-verification-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} placeholder="000000" value={code} onChange={(event) => setCode(event.target.value.replace(/\\D/g, "").slice(0, 6))} required />
+          <input id="community-verification-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} placeholder="000000" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} required />
           <button className="login-submit" type="submit" disabled={pending}>
             {pending ? "Confirmando…" : "Confirmar e-mail"} <span aria-hidden="true">↗</span>
           </button>
