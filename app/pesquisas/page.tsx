@@ -8,7 +8,7 @@ import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import ResearchFilters from "./ResearchFilters";
 import PageIntro from "../components/ui/PageIntro";
-import Skeleton, { SkeletonLines } from "../components/ui/Skeleton";
+import { ResearchResultsSkeleton } from "./ResearchArchiveSkeleton";
 
 export const metadata: Metadata = {
   title: "Arquivo de pesquisas científicas",
@@ -40,27 +40,6 @@ function ResearchArchiveIntro() {
   );
 }
 
-function ResearchResultsSkeleton() {
-  return (
-    <div className="research-results-loading" aria-busy="true" aria-label="Carregando pesquisas">
-      <div className="loading-filter-row">
-        <Skeleton width="100%" height={48} />
-        <Skeleton width="100%" height={48} />
-      </div>
-      <Skeleton width={150} height={12} />
-      <div className="loading-research-list">
-        {Array.from({ length: 4 }, (_, index) => (
-          <article className="loading-research-card" key={index}>
-            <Skeleton width="34%" height={10} />
-            <Skeleton width="82%" height={24} />
-            <SkeletonLines count={3} />
-            <Skeleton width="25%" height={12} />
-          </article>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 async function ResearchArchiveResults() {
   await connection();
