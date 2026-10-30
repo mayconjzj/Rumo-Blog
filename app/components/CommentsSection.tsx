@@ -22,14 +22,19 @@ export default function CommentsSection({ articleSlug }: CommentsSectionProps) {
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(storageKey);
-      if (saved) setComments(JSON.parse(saved) as Comment[]);
-    } catch {
-      setNotice("Não foi possível carregar os comentários salvos neste navegador.");
-    } finally {
-      setReady(true);
-    }
+    // Defer browser storage hydration until after the effect has committed.
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = window.localStorage.getItem(storageKey);
+        if (saved) setComments(JSON.parse(saved) as Comment[]);
+      } catch {
+        setNotice("Não foi possível carregar os comentários salvos neste navegador.");
+      } finally {
+        setReady(true);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [storageKey]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
