@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import { blogService, type BlogInput } from "@/lib/server/blog-service";
 
@@ -22,8 +22,8 @@ function fail(reason: string): never {
 }
 
 function refreshArticlePages(slug?: string) {
-  revalidateTag("published-blog-posts", "max");
-  if (slug) revalidateTag(`published-blog-post:${slug}`, "max");
+  updateTag("published-blog-posts");
+  if (slug) updateTag(`published-blog-post:${slug}`);
   revalidatePath("/");
   revalidatePath("/sitemap.xml");
   revalidatePath("/admin");

@@ -229,8 +229,10 @@ function PublishedResearchFallback() {
     <section className="published-research-section" aria-busy="true" aria-label="Carregando pesquisas publicadas">
       <div className="container">
         <div className="section-heading">
-          <Skeleton width={150} height={10} />
-          <Skeleton width="52%" height={34} />
+          <div>
+            <Skeleton width={150} height={10} />
+            <Skeleton width="52%" height={34} />
+          </div>
           <Skeleton width="78%" height={14} />
         </div>
         <div className="published-research-grid">
