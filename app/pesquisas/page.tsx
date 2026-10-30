@@ -65,7 +65,7 @@ function ResearchResultsSkeleton() {
 async function ResearchArchiveResults() {
   await connection();
 
-  let papers;
+  let papers: Awaited<ReturnType<typeof listPublishedPapers>> = [];
   let failed = false;
 
   try {
