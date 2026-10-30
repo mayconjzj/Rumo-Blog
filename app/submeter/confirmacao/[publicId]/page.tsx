@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { neon } from "@neondatabase/serverless";
-export const dynamic="force-dynamic";
 const labels:Record<string,string>={submitted:"Recebida",technical_check:"Em triagem técnica",under_review:"Em avaliação por pares",revisions_requested:"Revisões solicitadas",accepted:"Aceita",rejected:"Rejeitada",published:"Publicada",withdrawn:"Retirada"};
 export default async function SubmissionReceipt({params}:{params:Promise<{publicId:string}>}) {
+ await connection();
  const {publicId}=await params;if(!/^[0-9a-f-]{36}$/i.test(publicId)||!process.env.DATABASE_URL)notFound();
  let submission:{title:string;status:string;created_at:string|Date}|undefined;
  try{const sql=neon(process.env.DATABASE_URL);const rows=await sql.query("SELECT title,status,created_at FROM public.journal_submissions WHERE public_id=$1::uuid LIMIT 1",[publicId]);submission=rows[0] as typeof submission;}catch{notFound();}

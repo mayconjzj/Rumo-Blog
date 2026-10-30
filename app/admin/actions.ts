@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import { blogService, type BlogInput } from "@/lib/server/blog-service";
 
@@ -22,7 +22,10 @@ function fail(reason: string): never {
 }
 
 function refreshArticlePages(slug?: string) {
+  revalidateTag("published-blog-posts", "max");
+  if (slug) revalidateTag(`published-blog-post:${slug}`, "max");
   revalidatePath("/");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin");
   if (slug) revalidatePath("/artigos/" + slug);
 }

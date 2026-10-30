@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 import SiteFooter from "../components/SiteFooter";
-export const metadata = { title: "Política editorial | Revista Rumo", description: "Escopo, avaliação, custos e decisões editoriais da Revista Rumo." };
+export const metadata = createPageMetadata({ title: "Política editorial", description: "Escopo, avaliação, custos e decisões editoriais da Revista Rumo.", path: "/politica-editorial" });
 export default function EditorialPolicy() {
   return <><main className="editorial-document">
     <Link href="/" className="editorial-back-link">← Revista Rumo</Link>

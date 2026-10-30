@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
-import { requireAdmin } from "@/lib/server/admin-auth";
+import { requireAdminPage } from "@/lib/server/admin-auth";
 import AdminHeader from "@/app/components/AdminHeader";
 import { assignReviewerAction,updateSubmissionAction } from "./actions";
-export const dynamic="force-dynamic";
 type Submission={id:number;public_id:string;title:string;abstract:string;scientific_area:string;keywords:string[];status:string;corresponding_author_email:string;created_at:string|Date;manuscript_file_name:string|null;review_round:number};
 type Review={submission_id:number;reviewer_email:string;recommendation:string;comments_to_author:string;confidential_to_editor:string|null;submitted_at:string|Date|null};
 const labels:Record<string,string>={submitted:"Recebida",technical_check:"Triagem técnica",under_review:"Em avaliação",revisions_requested:"Revisões solicitadas",accepted:"Aceita",rejected:"Rejeitada",withdrawn:"Retirada",published:"Publicada"};
 const statuses=["submitted","technical_check","under_review","revisions_requested","accepted","published","rejected","withdrawn"];
 const recommendations:Record<string,string>={accept:"Aceitar",minor_revision:"Revisões menores",major_revision:"Revisões maiores",reject:"Rejeitar"};
 export default async function EditorialSubmissions({searchParams}:{searchParams:Promise<{erro?:string;sucesso?:string;status?:string}>}){
- const {email}=await requireAdmin(),params=await searchParams;let submissions:Submission[]=[],reviews:Review[]=[];let dbError=false; const statusFilter=params.status??"all";
+ const {email}=await requireAdminPage(),params=await searchParams;let submissions:Submission[]=[],reviews:Review[]=[];let dbError=false; const statusFilter=params.status??"all";
  try{if(!process.env.DATABASE_URL)throw new Error("db");const sql=neon(process.env.DATABASE_URL);const data=await Promise.all([
   sql.query("SELECT id,public_id,title,abstract,scientific_area,keywords,status,corresponding_author_email,created_at,manuscript_file_name,review_round FROM public.journal_submissions ORDER BY created_at DESC LIMIT 200",[]),
   sql.query("SELECT r.submission_id,r.reviewer_email,p.recommendation,p.comments_to_author,p.confidential_to_editor,p.submitted_at FROM public.review_assignments r JOIN public.peer_reviews p ON p.assignment_id=r.id ORDER BY p.submitted_at DESC",[])

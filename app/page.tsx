@@ -1,12 +1,61 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import Button from "./components/ui/Button";
 import TextLink from "./components/ui/TextLink";
 import SectionHeading from "./components/ui/SectionHeading";
 import HomeSiteHeader from "./components/HomeSiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import { listLatestPublishedPapers } from "@/lib/server/publication-repository";
+import { siteUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Revista científica multidisciplinar",
+  description: "Pesquisas científicas multidisciplinares, leitura gratuita e submissão de manuscritos sem taxas na Revista Rumo.",
+  alternates: { canonical: siteUrl },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Revista Rumo",
+    title: "Revista Rumo | Revista científica multidisciplinar",
+    description: "Pesquisas científicas multidisciplinares, leitura gratuita e transparência editorial.",
+    url: siteUrl,
+  },
+  twitter: {
+    card: "summary",
+    title: "Revista Rumo | Revista científica multidisciplinar",
+    description: "Pesquisas científicas multidisciplinares, leitura gratuita e transparência editorial.",
+  },
+};
+
+function HomeStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}#organization`,
+        name: "Revista Rumo",
+        url: siteUrl,
+        description: "Revista científica multidisciplinar com leitura e submissão gratuitas.",
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}#website`,
+        name: "Revista Rumo",
+        url: siteUrl,
+        inLanguage: "pt-BR",
+        publisher: { "@id": `${siteUrl}#organization` },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+    />
+  );
+}
 
 function HeroSection() {
   return (
@@ -253,6 +302,7 @@ export default async function HomePage() {
 
   return (
     <main>
+      <HomeStructuredData />
       <HomeSiteHeader />
       <HeroSection />
       <PublishedResearchSection papers={papers} />

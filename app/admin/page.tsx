@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/server/admin-auth";
+import { requireAdminPage } from "@/lib/server/admin-auth";
 import AdminHeader from "@/app/components/AdminHeader";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminPage() {
-  const { email } = await requireAdmin();
+  const { email } = await requireAdminPage();
   return (
     <main className="admin-home">
       <AdminHeader email={email} />

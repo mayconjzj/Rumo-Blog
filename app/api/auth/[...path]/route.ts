@@ -1,11 +1,9 @@
-import { auth } from "@/lib/auth/server";
+import { getAuth } from "@/lib/auth/server";
 
-// Forward every method supported by Neon Auth. In particular, password-reset
-// requests must reach the managed auth service instead of being blocked here.
-const handlers = auth.handler();
+type AuthHandlers = ReturnType<ReturnType<typeof getAuth>["handler"]>;
 
-export const GET = handlers.GET;
-export const POST = handlers.POST;
-export const PUT = handlers.PUT;
-export const DELETE = handlers.DELETE;
-export const PATCH = handlers.PATCH;
+export const GET: AuthHandlers["GET"] = (...args) => getAuth().handler().GET(...args);
+export const POST: AuthHandlers["POST"] = (...args) => getAuth().handler().POST(...args);
+export const PUT: AuthHandlers["PUT"] = (...args) => getAuth().handler().PUT(...args);
+export const DELETE: AuthHandlers["DELETE"] = (...args) => getAuth().handler().DELETE(...args);
+export const PATCH: AuthHandlers["PATCH"] = (...args) => getAuth().handler().PATCH(...args);

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth/server";
 import CommunityAuthShell from "../components/CommunityAuthShell";
 import CommunityLoginForm from "./CommunityLoginForm";
 
 export const metadata = {
-  title: "Entrar | Revista Rumo",
+  title: "Entrar",
   robots: { index: false, follow: false },
 };
 
@@ -27,6 +28,7 @@ export default async function SignInPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const query = await searchParams;
   const returnTo = getSafeReturnTo(query.returnTo);
   const { data } = await auth.getSession();

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { getCommunityAccess } from "@/lib/server/community-access";
 import ResearchSiteHeader from "../components/ResearchSiteHeader";
 import SiteFooter from "../components/SiteFooter";
@@ -7,9 +8,10 @@ import SubmissionForm from "./submission-form";
 import PageIntro from "../components/ui/PageIntro";
 
 export const metadata = {
-  title: "Submeter artigo | Revista Rumo",
+  title: "Submeter artigo",
   description:
     "Envie gratuitamente um manuscrito científico para avaliação editorial da Revista Rumo.",
+  robots: { index: false, follow: false },
 };
 
 const scientificAreas = [
@@ -25,6 +27,7 @@ const scientificAreas = [
 ];
 
 export default async function SubmitPage() {
+  await connection();
   const access = await getCommunityAccess();
   if (access.status === "anonymous") redirect("/login?returnTo=%2Fsubmeter");
   if (access.status === "disabled") redirect("/pesquisas?perfil=desativado");

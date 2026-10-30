@@ -1,0 +1,24 @@
+.skeleton {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  min-height: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #e9edf2;
+}
+.skeleton::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+  animation: skeleton-shimmer 1.45s ease-in-out infinite;
+}
+.text { height: 12px; border-radius: 999px; }
+.circle { border-radius: 50%; }
+.lines { display: grid; gap: 10px; width: 100%; }
+@keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}

@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { neon } from "@neondatabase/serverless";
-import { requireAdmin } from "@/lib/server/admin-auth";
+import { requireAdminPage } from "@/lib/server/admin-auth";
 import AdminHeader from "@/app/components/AdminHeader";
-export const dynamic = "force-dynamic";
 type MetricRow = { label: string; total: number | string };
 const number = (value: number) => new Intl.NumberFormat("pt-BR").format(value);
 export default async function MetricsPage() {
-  const { email } = await requireAdmin();
+  const { email } = await requireAdminPage();
   let total = 0, today = 0, pages: MetricRow[] = [], sources: MetricRow[] = [], days: MetricRow[] = [];
   let unavailable = false;
   try {

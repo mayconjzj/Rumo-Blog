@@ -8,6 +8,8 @@ import {
   type BlogStatus,
   type NewBlogPost,
   type UpdateBlogPost,
+  type RelatedBlogPost,
+  type PublishedBlogSummary,
 } from "./blog-repository";
 
 export type BlogFailure = "campos" | "tamanho" | "banco" | "slug" | "acao";
@@ -72,8 +74,16 @@ export class BlogService {
     return this.repository.listPublished();
   }
 
+  async getPublishedPostSummaries(): Promise<PublishedBlogSummary[]> {
+    return this.repository.listPublishedSummaries();
+  }
+
   async getPublishedPostBySlug(slug: string): Promise<BlogPost | null> {
     return this.repository.findPublishedBySlug(slug);
+  }
+
+  async getRelatedPublishedPosts(slug: string, category: string, limit = 3): Promise<RelatedBlogPost[]> {
+    return this.repository.listRelated(slug, category, limit);
   }
 
   async getAdminPosts(): Promise<BlogPost[]> {

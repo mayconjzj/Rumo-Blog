@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth/server";
+import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 type SearchParams = { returnTo?: string };
 
@@ -17,6 +19,7 @@ export default async function AuthCallbackPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const query = await searchParams;
   const returnTo = getSafeReturnTo(query.returnTo);
   const { data } = await auth.getSession();

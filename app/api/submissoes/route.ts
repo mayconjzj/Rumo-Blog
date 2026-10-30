@@ -6,9 +6,6 @@ import {
 } from "@/lib/server/submission-repository";
 import { validateSubmissionForm } from "@/lib/server/submission-validation";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 
 export async function POST(request: Request) {

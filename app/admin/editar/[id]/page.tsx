@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdmin } from "@/lib/server/admin-auth";
+import { requireAdminPage } from "@/lib/server/admin-auth";
 import { getAdminPosts } from "@/lib/blogs";
 import ArticleEditor from "../../ArticleEditor";
 import { updateBlogAction } from "../../actions";
 import LogoutButton from "../../LogoutButton";
 
-export const dynamic = "force-dynamic";
-
 export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { email } = await requireAdmin();
+  const { email } = await requireAdminPage();
   const { id: rawId } = await params;
   const id = Number(rawId);
   if (!Number.isSafeInteger(id) || id < 1) notFound();

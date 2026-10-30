@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import {
@@ -31,7 +31,9 @@ export async function updateSubmissionAction(formData: FormData) {
   }
 
   revalidatePath("/admin/submissoes");
+  revalidateTag("published-papers", "max");
   revalidatePath("/pesquisas");
+  revalidatePath("/sitemap.xml");
   redirect("/admin/submissoes?sucesso=atualizado");
 }
 

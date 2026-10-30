@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound,redirect } from "next/navigation";
 import { neon } from "@neondatabase/serverless";
 import { auth } from "@/lib/auth/server";
+import { connection } from "next/server";
 import { submitReviewAction } from "../../actions";
-export const dynamic="force-dynamic";
 export default async function ReviewFormPage({params}:{params:Promise<{id:string}>}){
+ await connection();
  const {id:raw}=await params,id=Number(raw);if(!Number.isSafeInteger(id)||id<1||!process.env.DATABASE_URL)notFound();
  const {data:session}=await auth.getSession(),email=session?.user?.email?.trim().toLowerCase();if(!email)redirect("/login");
  let assignment:{id:number;submission_id:number;title:string;abstract:string;scientific_area:string;review_round:number}|undefined;

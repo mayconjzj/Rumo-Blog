@@ -1,9 +1,7 @@
 import type { MetadataRoute } from "next";
 import { neon } from "@neondatabase/serverless";
-import { getPublishedPosts } from "@/lib/blogs";
+import { getPublishedPostSummaries } from "@/lib/blogs";
 import { siteUrl } from "@/lib/site";
-
-export const dynamic = "force-dynamic";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
@@ -19,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   add({ url: siteUrl, changeFrequency: "weekly", priority: 1 });
   add({ url: `${siteUrl}/pesquisas`, changeFrequency: "weekly", priority: 0.8 });
-  add({ url: `${siteUrl}/submeter`, changeFrequency: "monthly", priority: 0.6 });
 
   for (const path of [
     "/politica-editorial",
@@ -31,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    const posts = await getPublishedPosts();
+    const posts = await getPublishedPostSummaries();
     for (const post of posts) {
       add({
         url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
@@ -54,7 +51,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         `SELECT public_id, published_at
          FROM public.journal_submissions
          WHERE status = $1
-           AND NULLIF(BTRIM(title), '') IS NOT NULL`,
+           AND NULLIF(BTRIM(title), '') IS NOT NULL
+           AND manuscript_pdf IS NOT NULL`,
         ["published"],
       );
 

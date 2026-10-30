@@ -1,14 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import CommentsSection from "../../components/CommentsSection";
-import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blogs";
+import { getPublishedPostBySlug, getRelatedPublishedPosts } from "@/lib/blogs";
 import { siteUrl } from "@/lib/site";
 
 type ArticleSource = { title: string; url: string };
 
+const CommentsSection = dynamic(() => import("../../components/CommentsSection"), {
+  loading: () => <p className="comments-loading" aria-busy="true">Carregando comentários...</p>,
+});
+
 function sectionId(heading: string) {
   return heading.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function safeImageUrl(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function toIsoDate(value: string | Date | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 function formatDate(value: string | Date | null | undefined) {
@@ -40,9 +60,9 @@ function articleMetadata(title: string, description: string, slug: string, publi
     openGraph: {
       type: "article",
       locale: "pt_BR",
-      siteName: "Rumo",
+      siteName: "Revista Rumo",
       url,
-      title: `${title} | Rumo`,
+      title: `${title} | Revista Rumo`,
       description,
       publishedTime,
       modifiedTime,
@@ -50,7 +70,7 @@ function articleMetadata(title: string, description: string, slug: string, publi
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
-      title: `${title} | Rumo`,
+      title: `${title} | Revista Rumo`,
       description,
       images: image ? [image] : undefined,
     },
@@ -75,9 +95,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       post.title,
       post.excerpt,
       post.slug,
-      published ? new Date(published).toISOString() : undefined,
-      post.updated_at ? new Date(post.updated_at).toISOString() : undefined,
-      coverImage && (coverImage.startsWith("https://") || coverImage.startsWith("http://")) ? coverImage : undefined,
+      toIsoDate(published),
+      toIsoDate(post.updated_at),
+      safeImageUrl(coverImage),
     );
   }
   return { title: "Artigo não encontrado", robots: { index: false, follow: false } };
@@ -87,8 +107,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
   if (post) {
-    const allPosts = await getPublishedPosts();
-    const related = allPosts.filter((item) => item.slug !== post.slug).sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category)).slice(0, 3);
+    const related = await getRelatedPublishedPosts(post.slug, post.category);
     let structured: { version?: number; intro?: string; coverImage?: string; sources?: ArticleSource[]; sections?: { heading?: string; text?: string; imageUrl?: string; caption?: string }[] } | null = null;
     try {
       const parsed = JSON.parse(post.content);
@@ -99,48 +118,61 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const toc = contentSections.filter((section) => section.heading?.trim()).map((section) => ({ heading: section.heading!.trim(), id: sectionId(section.heading!.trim()) }));
     const postPublished = post.published_at ?? post.created_at;
     const postModified = post.updated_at ?? postPublished;
-    const postImage = structured?.coverImage && (structured.coverImage.startsWith("https://") || structured.coverImage.startsWith("http://")) ? structured.coverImage : undefined;
+    const postImage = safeImageUrl(structured?.coverImage);
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+        { "@type": "ListItem", position: 2, name: "Artigos", item: `${siteUrl}/#artigos` },
+        { "@type": "ListItem", position: 3, name: post.title, item: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}` },
+      ],
+    };
     const postJsonLd = {
       "@context": "https://schema.org",
       "@type": "Article",
       headline: post.title,
       description: post.excerpt,
+      articleSection: post.category,
       mainEntityOfPage: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
       author: { "@type": "Organization", name: "Redação Rumo", url: siteUrl },
-      publisher: { "@type": "Organization", name: "Rumo", url: siteUrl },
-      datePublished: postPublished ? new Date(postPublished).toISOString() : undefined,
-      dateModified: postModified ? new Date(postModified).toISOString() : undefined,
+      publisher: { "@type": "Organization", name: "Revista Rumo", url: siteUrl },
+      datePublished: toIsoDate(postPublished),
+      dateModified: toIsoDate(postModified),
       image: postImage ? [postImage] : undefined,
       inLanguage: "pt-BR",
     };
     return (
       <main className="reading-page">
-        {jsonLd(postJsonLd)}
+        {jsonLd(postJsonLd)}\n        {jsonLd(breadcrumbJsonLd)}
         <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
         <header className="site-header"><div className="container nav-wrap">
           <Link className="brand" href="/" aria-label="Rumo, página inicial"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
           <nav className="main-nav" aria-label="Navegação principal"><Link href="/">Início</Link><Link className="nav-active" href="/#artigos">Artigos</Link><Link href="/#sobre">Sobre</Link></nav>
-          <Link className="admin-link" href="/login">Área administrativa <span aria-hidden="true">↗</span></Link><Link className="mobile-admin" href="/login" aria-label="Área administrativa">↗</Link>
+          <Link className="admin-link" href="/login">Entrar <span aria-hidden="true">↗</span></Link><Link className="mobile-admin" href="/login" aria-label="Entrar">↗</Link>
         </div></header>
         <div className="article-breadcrumb container"><Link href="/">Início</Link><span>/</span><Link href="/#artigos">Artigos</Link><span>/</span><span>{post.category}</span></div>
         <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><span>Publicado em {formatDate(post.published_at ?? post.created_at)}</span>{formatDate(post.updated_at) && formatDate(post.updated_at) !== formatDate(post.published_at ?? post.created_at) && <><span className="byline-divider" /><span className="article-updated">Atualizado em {formatDate(post.updated_at)}</span></>}</div></header>
-          {structured?.coverImage ? <img src={structured.coverImage} alt={post.title} style={{ display: "block", width: "min(1000px, calc(100% - 48px))", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
+          {postImage ? <img src={postImage} alt={post.title} loading="eager" fetchPriority="high" decoding="async" style={{ display: "block", width: "min(1000px, calc(100% - 48px))", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
           <div className="reading-body">
             {structured?.intro && <p className="reading-intro" style={{ whiteSpace: "pre-line" }}>{structured.intro}</p>}
             <ArticleExtras toc={toc} />
-            {structured ? contentSections.map((section, index) => (
-              <section key={index} id={section.heading?.trim() ? sectionId(section.heading.trim()) : undefined}>
-                {section.heading && <h2>{section.heading}</h2>}
-                {section.text?.split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex}>{paragraph.trim()}</p>)}
-                {section.imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={section.imageUrl} alt={section.caption || section.heading || post.title} style={{ display: "block", width: "100%", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
-              </section>
-            )) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
+            {structured ? contentSections.map((section, index) => {
+              const imageUrl = safeImageUrl(section.imageUrl);
+              return (
+                <section key={index} id={section.heading?.trim() ? sectionId(section.heading.trim()) : undefined}>
+                  {section.heading && <h2>{section.heading}</h2>}
+                  {section.text?.split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex}>{paragraph.trim()}</p>)}
+                  {imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={imageUrl} alt={section.caption || section.heading || post.title} loading="lazy" decoding="async" style={{ display: "block", width: "100%", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
+                </section>
+              );
+            }) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
             <ArticleFooterExtras sources={Array.isArray(structured?.sources) ? structured.sources.filter((source) => source?.title && /^https:\/\//.test(source.url)) : []} related={related.map((item) => ({ slug: item.slug, title: item.title, category: item.category, excerpt: item.excerpt }))} />
           <div className="article-end-note"><span>R</span><p>Informação para decisões melhores.</p></div><div className="article-share-row"><span>Este conteúdo foi útil?</span><a href="#comentarios">Deixe sua opinião <span aria-hidden="true">↓</span></a></div></div>
         </article>
         <div className="container reading-comments-wrap"><CommentsSection articleSlug={post.slug} /></div>
         <section className="reading-back"><div className="container reading-back-inner"><div><span className="section-number">CONTINUE EXPLORANDO</span><h2>Mais ideias para <em>seguir em frente.</em></h2></div><Link className="button button-primary" href="/#artigos">Voltar aos artigos <span aria-hidden="true">↗</span></Link></div></section>
-        <footer className="site-footer"><div className="container footer-inner"><Link className="brand brand-footer" href="/"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link><span>Informação para decisões melhores.</span><span>© 2026 Rumo Blog</span></div></footer>
+        <footer className="site-footer"><div className="container footer-inner"><Link className="brand brand-footer" href="/"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link><span>Informação para decisões melhores.</span><span>© 2026 Revista Rumo</span></div></footer>
       </main>
     );
   }

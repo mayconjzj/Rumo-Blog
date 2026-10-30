@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import Brand from "./ui/Brand";
 import TextLink from "./ui/TextLink";
 
@@ -9,7 +10,14 @@ const editorialLinks = [
   { href: "/privacidade", label: "Privacidade e dados" },
 ];
 
-export default function SiteFooter() {
+async function getCopyrightYear() {
+  "use cache";
+  cacheLife("hours");
+  return new Date().getFullYear();
+}
+
+export default async function SiteFooter() {
+  const year = await getCopyrightYear();
   return (
     <footer className="site-footer">
       <div className="container footer-main">
@@ -24,7 +32,6 @@ export default function SiteFooter() {
           <h2>Explore</h2>
           <Link href="/">Página inicial</Link>
           <Link href="/pesquisas">Pesquisas publicadas</Link>
-          <Link href="/#artigos">Conteúdo editorial</Link>
           <Link href="/#sobre">Sobre a revista</Link>
         </nav>
         <nav className="footer-nav-column" aria-label="Políticas e informações">
@@ -40,7 +47,7 @@ export default function SiteFooter() {
       </div>
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
-          <span>© {new Date().getFullYear()} Revista Rumo</span>
+          <span>© {year} Revista Rumo</span>
           <span>Ciência aberta · Conhecimento compartilhado</span>
           <Link href="/privacidade">Privacidade</Link>
         </div>
