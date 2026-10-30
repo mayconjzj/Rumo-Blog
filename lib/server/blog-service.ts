@@ -78,6 +78,10 @@ export class BlogService {
     return this.repository.listPublishedSummaries();
   }
 
+  async getLatestPublishedPostSlugs(limit: number): Promise<{ slug: string }[]> {
+    return this.repository.listLatestPublishedSlugs(limit);
+  }
+
   async getPublishedPostBySlug(slug: string): Promise<BlogPost | null> {
     return this.repository.findPublishedBySlug(slug);
   }

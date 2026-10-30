@@ -27,21 +27,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     add({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: 0.4 });
   }
 
-  try {
-    const posts = await getPublishedPostSummaries();
-    for (const post of posts) {
-      add({
-        url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
-        lastModified:
-          toDate(post.updated_at) ??
-          toDate(post.published_at) ??
-          toDate(post.created_at),
-        changeFrequency: "monthly",
-        priority: 0.7,
-      });
+  if (process.env.DATABASE_URL) {
+    try {
+      const posts = await getPublishedPostSummaries();
+      for (const post of posts) {
+        add({
+          url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
+          lastModified:
+            toDate(post.updated_at) ??
+            toDate(post.published_at) ??
+            toDate(post.created_at),
+          changeFrequency: "monthly",
+          priority: 0.7,
+        });
+      }
+    } catch (error) {
+      console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
     }
-  } catch (error) {
-    console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
   }
 
   try {

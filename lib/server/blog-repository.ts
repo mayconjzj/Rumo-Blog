@@ -12,6 +12,7 @@ export type BlogStatus = BlogPost["status"];
 export interface BlogRepository {
   listPublished(): Promise<BlogPost[]>;
   listPublishedSummaries(): Promise<PublishedBlogSummary[]>;
+  listLatestPublishedSlugs(limit: number): Promise<{ slug: string }[]>;
   findPublishedBySlug(slug: string): Promise<BlogPost | null>;
   listRelated(slug: string, category: string, limit: number): Promise<RelatedBlogPost[]>;
   listAll(): Promise<BlogPost[]>;
@@ -51,6 +52,15 @@ export class NeonBlogRepository implements BlogRepository {
       [],
     );
     return rows as unknown as PublishedBlogSummary[];
+  }
+
+  async listLatestPublishedSlugs(limit: number): Promise<{ slug: string }[]> {
+    const sql = this.getSql();
+    const rows = await sql.query(
+      "SELECT slug FROM public.blog_posts WHERE status = 'published' ORDER BY COALESCE(published_at, created_at) DESC LIMIT $1",
+      [Math.max(1, Math.min(limit, 50))],
+    );
+    return rows as unknown as { slug: string }[];
   }
 
   async findPublishedBySlug(slug: string): Promise<BlogPost | null> {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { getPublishedPostBySlug, getPublishedPostSummaries, getRelatedPublishedPosts } from "@/lib/blogs";
+import { getLatestPublishedPostSlugs, getPublishedPostBySlug, getRelatedPublishedPosts } from "@/lib/blogs";
 import { siteUrl } from "@/lib/site";
 
 type ArticleSource = { title: string; url: string };
@@ -82,10 +82,12 @@ function jsonLd(data: Record<string, unknown>) {
 }
 
 export async function generateStaticParams() {
+  // Keep CI builds independent from production database credentials.
+  if (!process.env.DATABASE_URL) return [{ slug: "__static_placeholder__" }];
+
   try {
-    const posts = await getPublishedPostSummaries();
-    const params = posts.slice(0, 20).map((post) => ({ slug: post.slug }));
-    // Cache Components requires at least one sample param for build validation.
+    const posts = await getLatestPublishedPostSlugs(20);
+    const params = posts.map((post) => ({ slug: post.slug }));
     return params.length ? params : [{ slug: "__static_placeholder__" }];
   } catch (error) {
     console.error("Não foi possível gerar as rotas estáticas dos artigos.", error);

@@ -34,3 +34,10 @@ export async function getPublishedPostSummaries(): Promise<PublishedBlogSummary[
   cacheTag("published-blog-posts");
   return blogService.getPublishedPostSummaries();
 }
+
+export async function getLatestPublishedPostSlugs(limit = 20): Promise<{ slug: string }[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("published-blog-posts");
+  return blogService.getLatestPublishedPostSlugs(limit);
+}
