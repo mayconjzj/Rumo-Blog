@@ -65,33 +65,18 @@ function ResearchResultsSkeleton() {
 async function ResearchArchiveResults() {
   await connection();
 
-  try {
-    const papers = await listPublishedPapers();
-    if (papers.length === 0) {
-      return (
-        <div className="research-empty">
-          <h2>O primeiro número está em preparação</h2>
-          <p>
-            Ainda não há manuscritos publicados. A revista recebe submissões gratuitas de todas as áreas científicas.
-          </p>
-          <Link href="/submeter">Enviar uma pesquisa ↗</Link>
-        </div>
-      );
-    }
+  let papers;
+  let failed = false;
 
-    return (
-      <ResearchFilters
-        papers={papers.map((paper) => ({
-          ...paper,
-          published_at: paper.published_at && !Number.isNaN(new Date(paper.published_at).getTime())
-            ? new Date(paper.published_at).toISOString()
-            : "",
-          keywords: Array.isArray(paper.keywords) ? paper.keywords : [],
-        }))}
-      />
-    );
+  try {
+    papers = await listPublishedPapers();
   } catch (error) {
     console.error("Não foi possível carregar o arquivo científico.", error);
+    papers = [];
+    failed = true;
+  }
+
+  if (failed) {
     return (
       <div className="research-empty" role="status">
         <h2>Arquivo temporariamente indisponível</h2>
@@ -99,6 +84,31 @@ async function ResearchArchiveResults() {
       </div>
     );
   }
+
+  if (papers.length === 0) {
+    return (
+      <div className="research-empty">
+        <h2>O primeiro número está em preparação</h2>
+        <p>
+          Ainda não há manuscritos publicados. A revista recebe submissões gratuitas de todas as áreas científicas.
+        </p>
+        <Link href="/submeter">Enviar uma pesquisa ↗</Link>
+      </div>
+    );
+  }
+
+  return (
+    <ResearchFilters
+      papers={papers.map((paper) => ({
+        ...paper,
+        published_at:
+          paper.published_at && !Number.isNaN(new Date(paper.published_at).getTime())
+            ? new Date(paper.published_at).toISOString()
+            : "",
+        keywords: Array.isArray(paper.keywords) ? paper.keywords : [],
+      }))}
+    />
+  );
 }
 
 export default function ResearchArchive() {
