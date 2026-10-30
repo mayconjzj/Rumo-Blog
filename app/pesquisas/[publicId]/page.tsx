@@ -17,10 +17,15 @@ function plainDescription(value: string | null | undefined): string {
 }
 
 export async function generateStaticParams() {
-  const papers = await listLatestPublishedPapers();
-  const params = papers.map((paper) => ({ publicId: paper.public_id }));
-  // Keep the route build-valid even when preview builds lack database credentials.
-  return params.length ? params : [{ publicId: "__static_placeholder__" }];
+  try {
+    const papers = await listLatestPublishedPapers();
+    const params = papers.map((paper) => ({ publicId: paper.public_id }));
+    return params.length ? params : [{ publicId: "__static_placeholder__" }];
+  } catch (error) {
+    // Database credentials are not required to run static checks in CI.
+    console.error("Não foi possível gerar as rotas estáticas das pesquisas.", error);
+    return [{ publicId: "__static_placeholder__" }];
+  }
 }
 
 export async function generateMetadata({
