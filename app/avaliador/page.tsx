@@ -2,9 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { neon } from "@neondatabase/serverless";
 import { auth } from "@/lib/auth/server";
-export const dynamic="force-dynamic";
+import { connection } from "next/server";
 type Assignment={id:number;submission_id:number;title:string;scientific_area:string;abstract:string;status:string;due_at:string|Date|null;review_round:number};
 export default async function ReviewerPortal(){
+ await connection();
  const {data:session}=await auth.getSession(),email=session?.user?.email?.trim().toLowerCase();if(!email)redirect("/login");
  let rows:Assignment[]=[];let unavailable=false;
  try{if(!process.env.DATABASE_URL)throw new Error("db");const sql=neon(process.env.DATABASE_URL);rows=await sql.query(`SELECT r.id,r.submission_id,s.title,s.scientific_area,s.abstract,r.status,r.due_at,r.review_round FROM public.review_assignments r JOIN public.journal_submissions s ON s.id=r.submission_id WHERE lower(r.reviewer_email)=$1 AND r.status IN ('invited','accepted') ORDER BY r.due_at NULLS LAST,r.invited_at DESC`,[email]) as unknown as Assignment[];}catch{unavailable=true;}

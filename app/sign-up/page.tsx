@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth/server";
 import CommunityAuthShell from "../components/CommunityAuthShell";
 import CommunitySignUpForm from "./CommunitySignUpForm";
 import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export const metadata = {
-  title: "Criar conta | Revista Rumo",
+  title: "Criar conta",
   robots: { index: false, follow: false },
 };
 
@@ -24,6 +25,7 @@ export default async function SignUpPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const query = await searchParams;
   const returnTo = getSafeReturnTo(query.returnTo);
   const { data } = await auth.getSession();

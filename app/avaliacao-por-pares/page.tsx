@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 import SiteFooter from "../components/SiteFooter";
-export const metadata = { title: "Avaliação por pares | Revista Rumo", description: "Etapas, critérios e responsabilidades na avaliação científica de manuscritos." };
+export const metadata = createPageMetadata({ title: "Avaliação por pares", description: "Etapas, critérios e responsabilidades na avaliação científica de manuscritos.", path: "/avaliacao-por-pares" });
 export default function PeerReviewPolicy() {
  return <><main className="editorial-document"><Link href="/" className="editorial-back-link">← Revista Rumo</Link><p className="editorial-eyebrow">DOCUMENTOS EDITORIAIS</p><h1>Avaliação por pares</h1>
  <p className="editorial-lead">A avaliação por pares examina a qualidade científica do manuscrito após a triagem editorial e quando há avaliadores adequados disponíveis. Não garante aceite nem substitui a decisão do editor.</p>

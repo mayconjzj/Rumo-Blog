@@ -1,12 +1,9 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 import SiteFooter from "../components/SiteFooter";
 
-export const metadata = {
-  title: "Privacidade e dados pessoais | Revista Rumo",
-  description:
-    "Saiba quais dados a Revista Rumo trata, por que são utilizados, por quanto tempo são mantidos e como exercer seus direitos previstos na LGPD.",
-};
+export const metadata = createPageMetadata({ title: "Privacidade e dados pessoais", description: "Saiba quais dados a Revista Rumo trata, por que são utilizados, por quanto tempo são mantidos e como exercer seus direitos previstos na LGPD.", path: "/privacidade" });
 
 export default function PrivacyPolicy() {
   return (

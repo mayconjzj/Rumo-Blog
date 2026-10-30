@@ -5,11 +5,16 @@ import type { BlogPost } from "@/lib/blog-types";
 
 export type NewBlogPost = Pick<BlogPost, "slug" | "title" | "category" | "excerpt" | "content" | "status">;
 export type UpdateBlogPost = NewBlogPost & { id: number };
+export type RelatedBlogPost = Pick<BlogPost, "slug" | "title" | "category" | "excerpt">;
+export type PublishedBlogSummary = Pick<BlogPost, "slug" | "created_at" | "updated_at" | "published_at">;
 export type BlogStatus = BlogPost["status"];
 
 export interface BlogRepository {
   listPublished(): Promise<BlogPost[]>;
+  listPublishedSummaries(): Promise<PublishedBlogSummary[]>;
+  listLatestPublishedSlugs(limit: number): Promise<{ slug: string }[]>;
   findPublishedBySlug(slug: string): Promise<BlogPost | null>;
+  listRelated(slug: string, category: string, limit: number): Promise<RelatedBlogPost[]>;
   listAll(): Promise<BlogPost[]>;
   create(post: NewBlogPost): Promise<boolean>;
   update(post: UpdateBlogPost): Promise<boolean>;
@@ -40,6 +45,24 @@ export class NeonBlogRepository implements BlogRepository {
     return rows as unknown as BlogPost[];
   }
 
+  async listPublishedSummaries(): Promise<PublishedBlogSummary[]> {
+    const sql = this.getSql();
+    const rows = await sql.query(
+      "SELECT slug, created_at, updated_at, published_at FROM public.blog_posts WHERE status = 'published' ORDER BY COALESCE(published_at, created_at) DESC",
+      [],
+    );
+    return rows as unknown as PublishedBlogSummary[];
+  }
+
+  async listLatestPublishedSlugs(limit: number): Promise<{ slug: string }[]> {
+    const sql = this.getSql();
+    const rows = await sql.query(
+      "SELECT slug FROM public.blog_posts WHERE status = 'published' ORDER BY COALESCE(published_at, created_at) DESC LIMIT $1",
+      [Math.max(1, Math.min(limit, 50))],
+    );
+    return rows as unknown as { slug: string }[];
+  }
+
   async findPublishedBySlug(slug: string): Promise<BlogPost | null> {
     const sql = this.getSql();
     const rows = await sql.query(
@@ -47,6 +70,15 @@ export class NeonBlogRepository implements BlogRepository {
       [slug],
     );
     return ((rows as unknown as BlogPost[])[0] ?? null);
+  }
+
+  async listRelated(slug: string, category: string, limit: number): Promise<RelatedBlogPost[]> {
+    const sql = this.getSql();
+    const rows = await sql.query(
+      "SELECT slug, title, category, excerpt FROM public.blog_posts WHERE status = 'published' AND slug <> $1 ORDER BY (category = $2) DESC, COALESCE(published_at, created_at) DESC LIMIT $3",
+      [slug, category, Math.max(1, Math.min(limit, 6))],
+    );
+    return rows as unknown as RelatedBlogPost[];
   }
 
   async listAll(): Promise<BlogPost[]> {

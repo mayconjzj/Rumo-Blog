@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { requireAdmin } from "@/lib/server/admin-auth";
+import { requireAdminPage } from "@/lib/server/admin-auth";
 import AdminHeader from "@/app/components/AdminHeader";
 import {
   deleteUserAccount,
@@ -8,8 +8,6 @@ import {
 } from "./actions";
 import DeleteUserButton from "./DeleteUserButton";
 import ProfileActionButton from "./ProfileActionButton";
-
-export const dynamic = "force-dynamic";
 
 type UserRow = {
   id: string;
@@ -55,7 +53,7 @@ export default async function UsersPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { email: adminEmail } = await requireAdmin();
+  const { email: adminEmail } = await requireAdminPage();
   const params = await searchParams;
   const query = params.q?.trim().toLocaleLowerCase("pt-BR") ?? "";
   const statusFilter = ["ativo", "desativado"].includes(params.status ?? "")

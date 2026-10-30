@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 type Props = { areas: string[] };
 export default function SubmissionForm({areas}:Props) {
+ const router = useRouter();
  const [busy,setBusy]=useState(false); const [error,setError]=useState(""); const [authors,setAuthors]=useState([{name:"",affiliation:""}]);
  async function submit(event:React.FormEvent<HTMLFormElement>) {
   event.preventDefault();setBusy(true);setError("");const form=event.currentTarget;const data=new FormData(form);data.set("authors",JSON.stringify(authors));
-  try {const response=await fetch("/api/submissoes",{method:"POST",body:data});const result=await response.json();if(!response.ok||!result.publicId)throw new Error(result.error||"Não foi possível enviar. Tente novamente.");window.location.href="/submeter/confirmacao/"+result.publicId;}
+  try {const response=await fetch("/api/submissoes",{method:"POST",body:data});const result=await response.json();if(!response.ok||!result.publicId)throw new Error(result.error||"Não foi possível enviar. Tente novamente.");router.push("/submeter/confirmacao/"+result.publicId);}
   catch(e){setError(e instanceof Error?e.message:"Falha de conexão. Tente novamente.");setBusy(false);}
  }
  const field:React.CSSProperties={display:"grid",gap:7,marginBottom:18,fontSize:13,fontWeight:700,color:"#24374b"};

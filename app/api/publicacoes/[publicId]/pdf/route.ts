@@ -4,9 +4,6 @@ import {
   ManuscriptDatabaseNotConfiguredError,
 } from "@/lib/server/manuscript-repository";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 type RouteContext = {
   params: Promise<{ publicId: string }>;
 };

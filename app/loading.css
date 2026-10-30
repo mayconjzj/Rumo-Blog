@@ -1,0 +1,21 @@
+.loading-page,.loading-admin,.loading-article,.loading-reviewer{min-height:100vh;background:#fff}
+.loading-topbar{background:#05132a}.loading-topbar-inner,.loading-header-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:34px}
+.loading-header,.loading-research-header,.loading-admin-header,.loading-article-header{border-bottom:1px solid #e1e6eb}
+.loading-header-inner{min-height:82px}.loading-brand,.loading-nav,.loading-actions{display:flex;align-items:center;gap:16px}
+.loading-hero{padding-block:62px;background:#05132a}.loading-hero-grid{display:grid;grid-template-columns:1fr .9fr;align-items:center;gap:42px}
+.loading-copy{display:grid;gap:18px}.loading-copy .skeleton{background:#263b57}.loading-visual{background:#183250}
+.loading-content{display:grid;gap:20px;padding-block:64px}.loading-card-grid,.loading-admin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.loading-card,.loading-admin-card,.loading-research-card,.loading-review-card{display:grid;align-content:start;gap:17px;padding:24px;border:1px solid #e1e6eb;background:#fff}
+.loading-archive{min-height:100vh}.loading-archive .research-archive-content{display:grid;gap:18px}
+.loading-filter-row{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-block:12px}.loading-research-list{display:grid;gap:14px}
+.loading-admin-content,.loading-article-content,.loading-reviewer-content{width:min(900px,calc(100% - 44px));margin:0 auto;padding-block:42px 70px;display:grid;gap:18px}
+.loading-form-panel{display:grid;gap:18px;margin-top:24px;padding:28px;border:1px solid #e1e6eb}.loading-form-field{display:grid;gap:9px}
+@media(max-width:700px){.loading-nav{display:none}.loading-hero{padding-block:42px}.loading-hero-grid{grid-template-columns:1fr;gap:26px}.loading-visual{height:190px!important}.loading-card-grid,.loading-admin-grid,.loading-filter-row{grid-template-columns:1fr}.loading-research-card{padding:20px}}
+
+.header-fallback-strip .skeleton{background:#29405b}
+.header-fallback-nav{min-height:82px}
+.header-fallback-brand,.header-fallback-links{display:flex;align-items:center;gap:14px}
+.header-fallback-links{gap:30px}
+.research-results-loading{display:grid;gap:18px}
+.research-results-loading .loading-filter-row{margin:0 0 2px}
+@media(max-width:700px){.header-fallback-links{display:none}.header-fallback-nav>.skeleton{width:112px!important}}

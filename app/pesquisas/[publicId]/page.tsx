@@ -1,66 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { neon } from "@neondatabase/serverless";
 import { siteUrl } from "@/lib/site";
-import { auth } from "@/lib/auth/server";
-import { submitCommunityReview } from "./actions";
+import { getPublishedPaperById, listLatestPublishedPapers } from "@/lib/server/publication-repository";
 
-export const dynamic = "force-dynamic";
-
-type CommunityReview = {
-  id: number;
-  reviewer_name: string;
-  methodology_score: number;
-  evidence_score: number;
-  clarity_score: number;
-  reproducibility_score: number;
-  recommendation: "supports" | "revision_needed" | "concerns";
-  comment: string;
-  created_at: string | Date;
-};
-
-type PublishedPaper = {
-  id: number;
-  public_id: string;
-  title: string;
-  abstract: string;
-  scientific_area: string;
-  keywords: string[] | null;
-  references_text: string | null;
-  published_at: string | Date;
-  authors: string;
-  affiliations: string;
-};
-
-async function getPublishedPaper(publicId: string): Promise<PublishedPaper | undefined> {
-  if (!process.env.DATABASE_URL) return undefined;
-  try {
-    const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql.query(
-      `SELECT s.id, s.public_id, s.title, s.abstract, s.scientific_area,
-              s.keywords, s.references_text, s.published_at,
-              COALESCE(string_agg(a.display_name, ', ' ORDER BY a.author_order), '') AS authors,
-              COALESCE(string_agg(DISTINCT NULLIF(a.affiliation, ''), '; '), '') AS affiliations
-       FROM public.journal_submissions s
-       LEFT JOIN public.submission_authors a ON a.submission_id = s.id
-       WHERE s.public_id = $1::uuid
-         AND s.status = 'published'
-         AND NULLIF(BTRIM(s.title), '') IS NOT NULL
-       GROUP BY s.id
-       LIMIT 1`,
-      [publicId],
-    );
-    return rows[0] as PublishedPaper | undefined;
-  } catch {
-    return undefined;
-  }
+function toIsoDate(value: string | Date | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 function plainDescription(value: string | null | undefined): string {
   const normalized = value?.replace(/\s+/g, " ").trim();
   if (!normalized) return "Leia gratuitamente esta pesquisa científica publicada na Revista Rumo.";
   return normalized.length > 160 ? `${normalized.slice(0, 157).trimEnd()}...` : normalized;
+}
+
+export async function generateStaticParams() {
+  try {
+    const papers = await listLatestPublishedPapers();
+    const params = papers.map((paper) => ({ publicId: paper.public_id }));
+    return params.length ? params : [{ publicId: "__static_placeholder__" }];
+  } catch (error) {
+    // Database credentials are not required to run static checks in CI.
+    console.error("Não foi possível gerar as rotas estáticas das pesquisas.", error);
+    return [{ publicId: "__static_placeholder__" }];
+  }
 }
 
 export async function generateMetadata({
@@ -73,7 +38,7 @@ export async function generateMetadata({
     return { title: "Pesquisa não encontrada", robots: { index: false, follow: false } };
   }
 
-  const paper = await getPublishedPaper(publicId);
+  const paper = await getPublishedPaperById(publicId);
   if (!paper) {
     return { title: "Pesquisa não encontrada", robots: { index: false, follow: false } };
   }
@@ -92,7 +57,7 @@ export async function generateMetadata({
       url,
       title: paper.title,
       description,
-      publishedTime: new Date(paper.published_at).toISOString(),
+      publishedTime: toIsoDate(paper.published_at),
     },
     twitter: { card: "summary", title: paper.title, description },
   };
@@ -105,7 +70,7 @@ export default async function PublishedPaper({
 }) {
   const { publicId } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(publicId)) notFound();
-  const paper = await getPublishedPaper(publicId);
+  const paper = await getPublishedPaperById(publicId);
   if (!paper) notFound();
 
   const canonicalUrl = `${siteUrl}/pesquisas/${encodeURIComponent(paper.public_id)}`;
@@ -113,6 +78,16 @@ export default async function PublishedPaper({
   const authors = paper.authors
     ? paper.authors.split(", ").map((name) => ({ "@type": "Person", name }))
     : undefined;
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Pesquisas publicadas", item: `${siteUrl}/pesquisas` },
+      { "@type": "ListItem", position: 3, name: paper.title, item: canonicalUrl },
+    ],
+  };
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
@@ -120,7 +95,7 @@ export default async function PublishedPaper({
     description: plainDescription(paper.abstract),
     mainEntityOfPage: canonicalUrl,
     url: canonicalUrl,
-    datePublished: new Date(paper.published_at).toISOString(),
+    datePublished: toIsoDate(paper.published_at),
     inLanguage: "pt-BR",
     isAccessibleForFree: true,
     keywords,
@@ -134,6 +109,10 @@ export default async function PublishedPaper({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData).replace(/</g, "\\u003c") }}
+      />
       <div style={{ maxWidth: 850, margin: "0 auto" }}>
         <Link href="/pesquisas" style={{ fontSize: 12, color: "#195AB4" }}>← Arquivo científico</Link>
         <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: ".14em", color: "#195AB4", marginTop: 30 }}>
@@ -145,7 +124,7 @@ export default async function PublishedPaper({
         {paper.authors && <p style={{ fontSize: 14, color: "#34485d", marginBottom: 5 }}>{paper.authors}</p>}
         {paper.affiliations && <p style={{ fontSize: 12, color: "#687789", marginBottom: 20 }}>{paper.affiliations}</p>}
         <p style={{ fontSize: 12, color: "#687789", marginBottom: 28 }}>
-          Publicado em {new Date(paper.published_at).toLocaleDateString("pt-BR")} · Acesso gratuito
+          Publicado em {paper.published_at ? new Date(paper.published_at).toLocaleDateString("pt-BR") : "Data não informada"} · Acesso gratuito
         </p>
         <section style={{ background: "#fff", border: "1px solid #e1e6eb", padding: "clamp(22px,4vw,34px)" }}>
           <h2 style={{ fontSize: 19, color: "#05132A" }}>Resumo</h2>

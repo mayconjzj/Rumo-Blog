@@ -1,11 +1,9 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 import EditorialDocumentNavigation from "../components/EditorialDocumentNavigation";
 import SiteFooter from "../components/SiteFooter";
 
-export const metadata = {
-  title: "Ética e integridade | Revista Rumo",
-  description: "Diretrizes de autoria, originalidade, ética em pesquisa, conflitos de interesse e uso de IA.",
-};
+export const metadata = createPageMetadata({ title: "Ética e integridade", description: "Diretrizes de autoria, originalidade, ética em pesquisa, conflitos de interesse e uso de IA.", path: "/etica-publicacao" });
 
 export default function PublicationEthics() {
   return (

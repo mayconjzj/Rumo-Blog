@@ -1,9 +1,7 @@
 import type { MetadataRoute } from "next";
 import { neon } from "@neondatabase/serverless";
-import { getPublishedPosts } from "@/lib/blogs";
+import { getPublishedPostSummaries } from "@/lib/blogs";
 import { siteUrl } from "@/lib/site";
-
-export const dynamic = "force-dynamic";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
@@ -19,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   add({ url: siteUrl, changeFrequency: "weekly", priority: 1 });
   add({ url: `${siteUrl}/pesquisas`, changeFrequency: "weekly", priority: 0.8 });
-  add({ url: `${siteUrl}/submeter`, changeFrequency: "monthly", priority: 0.6 });
 
   for (const path of [
     "/politica-editorial",
@@ -30,21 +27,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     add({ url: `${siteUrl}${path}`, changeFrequency: "monthly", priority: 0.4 });
   }
 
-  try {
-    const posts = await getPublishedPosts();
-    for (const post of posts) {
-      add({
-        url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
-        lastModified:
-          toDate(post.updated_at) ??
-          toDate(post.published_at) ??
-          toDate(post.created_at),
-        changeFrequency: "monthly",
-        priority: 0.7,
-      });
+  if (process.env.DATABASE_URL) {
+    try {
+      const posts = await getPublishedPostSummaries();
+      for (const post of posts) {
+        add({
+          url: `${siteUrl}/artigos/${encodeURIComponent(post.slug)}`,
+          lastModified:
+            toDate(post.updated_at) ??
+            toDate(post.published_at) ??
+            toDate(post.created_at),
+          changeFrequency: "monthly",
+          priority: 0.7,
+        });
+      }
+    } catch (error) {
+      console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
     }
-  } catch (error) {
-    console.error("Não foi possível carregar artigos publicados para o sitemap.", error);
   }
 
   try {
@@ -54,7 +53,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         `SELECT public_id, published_at
          FROM public.journal_submissions
          WHERE status = $1
-           AND NULLIF(BTRIM(title), '') IS NOT NULL`,
+           AND NULLIF(BTRIM(title), '') IS NOT NULL
+           AND manuscript_pdf IS NOT NULL`,
         ["published"],
       );
 

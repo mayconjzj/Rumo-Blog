@@ -1,0 +1,56 @@
+name: Quality Quest
+
+on:
+  push:
+    branches:
+      - main
+      - refactor/performance-seo-foundation
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Lint, typecheck and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Cache npm and Next.js build artifacts
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.npm
+            .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ github.sha }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('package.json') }}-
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript checks
+        run: npm run typecheck
+
+      - name: Build Next.js application
+        run: npm run build

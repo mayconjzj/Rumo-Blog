@@ -1,12 +1,64 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { connection } from "next/server";
+import type { Metadata } from "next";
 import Button from "./components/ui/Button";
 import TextLink from "./components/ui/TextLink";
 import SectionHeading from "./components/ui/SectionHeading";
 import HomeSiteHeader from "./components/HomeSiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import { listLatestPublishedPapers } from "@/lib/server/publication-repository";
+import { siteUrl } from "@/lib/site";
+import Skeleton from "./components/ui/Skeleton";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Revista científica multidisciplinar",
+  description: "Pesquisas científicas multidisciplinares, leitura gratuita e submissão de manuscritos sem taxas na Revista Rumo.",
+  alternates: { canonical: siteUrl },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Revista Rumo",
+    title: "Revista Rumo | Revista científica multidisciplinar",
+    description: "Pesquisas científicas multidisciplinares, leitura gratuita e transparência editorial.",
+    url: siteUrl,
+  },
+  twitter: {
+    card: "summary",
+    title: "Revista Rumo | Revista científica multidisciplinar",
+    description: "Pesquisas científicas multidisciplinares, leitura gratuita e transparência editorial.",
+  },
+};
+
+function HomeStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}#organization`,
+        name: "Revista Rumo",
+        url: siteUrl,
+        description: "Revista científica multidisciplinar com leitura e submissão gratuitas.",
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}#website`,
+        name: "Revista Rumo",
+        url: siteUrl,
+        inLanguage: "pt-BR",
+        publisher: { "@id": `${siteUrl}#organization` },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+    />
+  );
+}
 
 function HeroSection() {
   return (
@@ -164,6 +216,42 @@ function PublishedResearchSection({
   );
 }
 
+async function PublishedResearchBoundary() {
+  // The database-backed region is request-time work; keep it out of the
+  // build-time shell while retaining the repository's time-based data cache.
+  await connection();
+  const papers = await listLatestPublishedPapers();
+  return <PublishedResearchSection papers={papers} />;
+}
+
+function PublishedResearchFallback() {
+  return (
+    <section className="published-research-section" aria-busy="true" aria-label="Carregando pesquisas publicadas">
+      <div className="container">
+        <div className="section-heading">
+          <div>
+            <Skeleton width={150} height={10} />
+            <Skeleton width="52%" height={34} />
+          </div>
+          <Skeleton width="78%" height={14} />
+        </div>
+        <div className="published-research-grid">
+          {Array.from({ length: 3 }, (_, index) => (
+            <article className="published-research-card" key={index}>
+              <Skeleton width="42%" height={11} />
+              <Skeleton width="88%" height={23} />
+              <Skeleton width="65%" height={12} />
+              <Skeleton width="100%" height={12} />
+              <Skeleton width="92%" height={12} />
+              <Skeleton width={120} height={12} />
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function EditorialProcessSection() {
   return (
     <section className="journal-process-section">
@@ -248,14 +336,15 @@ function AboutSection() {
   );
 }
 
-export default async function HomePage() {
-  const papers = await listLatestPublishedPapers();
-
+export default function HomePage() {
   return (
     <main>
+      <HomeStructuredData />
       <HomeSiteHeader />
       <HeroSection />
-      <PublishedResearchSection papers={papers} />
+      <Suspense fallback={<PublishedResearchFallback />}>
+        <PublishedResearchBoundary />
+      </Suspense>
       <EditorialProcessSection />
       <AboutSection />
       <SiteFooter />
