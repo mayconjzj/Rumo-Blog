@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { connection } from "next/server";
 import type { Metadata } from "next";
 import Button from "./components/ui/Button";
 import TextLink from "./components/ui/TextLink";
@@ -7,6 +9,7 @@ import HomeSiteHeader from "./components/HomeSiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import { listLatestPublishedPapers } from "@/lib/server/publication-repository";
 import { siteUrl } from "@/lib/site";
+import Skeleton from "./components/ui/Skeleton";
 
 export const metadata: Metadata = {
   title: "Revista científica multidisciplinar",
@@ -213,6 +216,40 @@ function PublishedResearchSection({
   );
 }
 
+async function PublishedResearchBoundary() {
+  // The database-backed region is request-time work; keep it out of the
+  // build-time shell while retaining the repository's time-based data cache.
+  await connection();
+  const papers = await listLatestPublishedPapers();
+  return <PublishedResearchSection papers={papers} />;
+}
+
+function PublishedResearchFallback() {
+  return (
+    <section className="published-research-section" aria-busy="true" aria-label="Carregando pesquisas publicadas">
+      <div className="container">
+        <div className="section-heading">
+          <Skeleton width={150} height={10} />
+          <Skeleton width="52%" height={34} />
+          <Skeleton width="78%" height={14} />
+        </div>
+        <div className="published-research-grid">
+          {Array.from({ length: 3 }, (_, index) => (
+            <article className="published-research-card" key={index}>
+              <Skeleton width="42%" height={11} />
+              <Skeleton width="88%" height={23} />
+              <Skeleton width="65%" height={12} />
+              <Skeleton width="100%" height={12} />
+              <Skeleton width="92%" height={12} />
+              <Skeleton width={120} height={12} />
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function EditorialProcessSection() {
   return (
     <section className="journal-process-section">
@@ -297,15 +334,15 @@ function AboutSection() {
   );
 }
 
-export default async function HomePage() {
-  const papers = await listLatestPublishedPapers();
-
+export default function HomePage() {
   return (
     <main>
       <HomeStructuredData />
       <HomeSiteHeader />
       <HeroSection />
-      <PublishedResearchSection papers={papers} />
+      <Suspense fallback={<PublishedResearchFallback />}>
+        <PublishedResearchBoundary />
+      </Suspense>
       <EditorialProcessSection />
       <AboutSection />
       <SiteFooter />

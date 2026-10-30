@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { getPublishedPostBySlug, getRelatedPublishedPosts } from "@/lib/blogs";
+import { getPublishedPostBySlug, getPublishedPostSummaries, getRelatedPublishedPosts } from "@/lib/blogs";
 import { siteUrl } from "@/lib/site";
 
 type ArticleSource = { title: string; url: string };
@@ -79,6 +79,18 @@ function articleMetadata(title: string, description: string, slug: string, publi
 
 function jsonLd(data: Record<string, unknown>) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
+}
+
+export async function generateStaticParams() {
+  try {
+    const posts = await getPublishedPostSummaries();
+    const params = posts.slice(0, 20).map((post) => ({ slug: post.slug }));
+    // Cache Components requires at least one sample param for build validation.
+    return params.length ? params : [{ slug: "__static_placeholder__" }];
+  } catch (error) {
+    console.error("Não foi possível gerar as rotas estáticas dos artigos.", error);
+    return [{ slug: "__static_placeholder__" }];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { siteUrl } from "@/lib/site";
-import { getPublishedPaperById } from "@/lib/server/publication-repository";
+import { getPublishedPaperById, listLatestPublishedPapers } from "@/lib/server/publication-repository";
 
 function toIsoDate(value: string | Date | null | undefined): string | undefined {
   if (!value) return undefined;
@@ -14,6 +14,13 @@ function plainDescription(value: string | null | undefined): string {
   const normalized = value?.replace(/\s+/g, " ").trim();
   if (!normalized) return "Leia gratuitamente esta pesquisa científica publicada na Revista Rumo.";
   return normalized.length > 160 ? `${normalized.slice(0, 157).trimEnd()}...` : normalized;
+}
+
+export async function generateStaticParams() {
+  const papers = await listLatestPublishedPapers();
+  const params = papers.map((paper) => ({ publicId: paper.public_id }));
+  // Keep the route build-valid even when preview builds lack database credentials.
+  return params.length ? params : [{ publicId: "__static_placeholder__" }];
 }
 
 export async function generateMetadata({
