@@ -30,7 +30,7 @@ export default function HomeSiteHeaderClient({ isAuthenticated }: Props) {
       <details className="mobile-nav-menu"><summary aria-label="Abrir menu de navegação"><span className="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span></summary>
         <nav className="mobile-nav-panel" aria-label="Navegação móvel">
           <Link className={pathname === "/" ? "nav-active" : undefined} aria-current={pathname === "/" ? "page" : undefined} href="/">Início</Link>
-          <a href="/#sobre">Sobre</a>
+          <Link href="/#sobre">Sobre</Link>
           <Link className={isResearch ? "nav-active" : undefined} aria-current={isResearch ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
           <Link className={pathname === "/submeter" ? "nav-active" : undefined} aria-current={pathname === "/submeter" ? "page" : undefined} href="/submeter">Submeter artigo</Link>
           <div className="mobile-auth-actions">
