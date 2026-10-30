@@ -95,6 +95,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "__static_placeholder__") {
+    return { title: "Artigo não encontrado", robots: { index: false, follow: false } };
+  }
   const post = await getPublishedPostBySlug(slug);
   if (post) {
     let coverImage: string | undefined;
@@ -117,6 +120,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (slug === "__static_placeholder__") notFound();
   const post = await getPublishedPostBySlug(slug);
   if (post) {
     const related = await getRelatedPublishedPosts(post.slug, post.category);
