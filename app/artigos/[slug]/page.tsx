@@ -162,7 +162,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     };
     return (
       <main className="reading-page">
-        {jsonLd(postJsonLd)}\n        {jsonLd(breadcrumbJsonLd)}
+        {jsonLd(postJsonLd)}
+        {jsonLd(breadcrumbJsonLd)}
         <div className="top-strip"><div className="container top-strip-inner"><span>INFORMAÇÃO PARA DECISÕES MELHORES</span><span>Conhecimento. Estratégia. Longo prazo.</span></div></div>
         <header className="site-header"><div className="container nav-wrap">
           <Link className="brand" href="/" aria-label="Rumo, página inicial"><span className="brand-mark">R</span><span>rumo<span className="brand-period">.</span></span></Link>
