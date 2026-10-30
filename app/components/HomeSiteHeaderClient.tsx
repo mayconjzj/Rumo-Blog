@@ -17,7 +17,7 @@ export default function HomeSiteHeaderClient({ isAuthenticated }: Props) {
       <Brand label="Rumo, página inicial" />
       <nav className="main-nav" aria-label="Navegação principal">
         <Link className={pathname === "/" ? "nav-active" : undefined} aria-current={pathname === "/" ? "page" : undefined} href="/">Início</Link>
-        <a href="/#sobre">Sobre</a>
+        <Link href="/#sobre">Sobre</Link>
         <Link className={isResearch ? "nav-active" : undefined} aria-current={isResearch ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
       </nav>
       <div className="public-auth-actions">
