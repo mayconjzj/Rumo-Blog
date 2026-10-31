@@ -6,8 +6,8 @@ import HomeSiteHeader from "./components/HomeSiteHeader";
 export default function NotFound() {
   return (
     <>
+      <HomeSiteHeader />
       <main className="about-section not-found-page">
-        <HomeSiteHeader />
         <section className="container" aria-labelledby="not-found-title">
           <p className="section-number">ERRO 404 / PÁGINA NÃO ENCONTRADA</p>
           <h1 id="not-found-title">
