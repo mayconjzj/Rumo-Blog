@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - refactor/performance-seo-foundation
   pull_request:
     branches:
       - main
@@ -15,7 +14,7 @@ permissions:
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   quality:

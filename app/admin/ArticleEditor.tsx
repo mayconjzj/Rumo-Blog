@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 
 type Section = { id: string; heading: string; text: string; imageUrl: string; caption: string };
 type ArticleDraft = { intro: string; coverImage: string; sections: Section[] };
@@ -12,6 +13,15 @@ type Props = {
 
 const inputStyle = { width: "100%", minWidth: 0, padding: "12px 13px", border: "1px solid #dbe2e9", color: "#17283b", background: "#fff", font: "inherit", fontSize: 13 } as const;
 const labelStyle = { display: "block", margin: "12px 0 6px", fontSize: 12, fontWeight: 700 as const, color: "#21364d" };
+
+function safePreviewUrl(value: string): string | null {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
 
 function parseContent(raw?: string): ArticleDraft {
   if (!raw) return { intro: "", coverImage: "", sections: [{ id: "s1", heading: "", text: "", imageUrl: "", caption: "" }] };
@@ -57,7 +67,7 @@ export default function ArticleEditor({ action, initial }: Props) {
 
       <label style={labelStyle} htmlFor="coverImage">Imagem de capa (URL opcional)</label>
       <input id="coverImage" value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="https://site.com/imagem.jpg" style={inputStyle} />
-      {coverImage.trim() && <img src={coverImage} alt="Prévia da capa" style={{ display: "block", width: "100%", maxHeight: 260, objectFit: "cover", marginTop: 8, border: "1px solid #dbe2e9" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+      {safePreviewUrl(coverImage) && <Image src={safePreviewUrl(coverImage)!} alt="Prévia da capa" width={1200} height={675} unoptimized sizes="(max-width: 760px) 100vw, 760px" style={{ display: "block", width: "100%", height: "auto", maxHeight: 260, objectFit: "cover", marginTop: 8, border: "1px solid #dbe2e9" }} onError={(event) => { event.currentTarget.style.display = "none"; }} />}
 
       <label style={labelStyle} htmlFor="intro">Introdução</label>
       <textarea id="intro" value={intro} onChange={(e) => setIntro(e.target.value)} rows={4} maxLength={10000} placeholder="Apresente a ideia principal do artigo." style={{ ...inputStyle, resize: "vertical", lineHeight: 1.75 }} />
@@ -75,7 +85,7 @@ export default function ArticleEditor({ action, initial }: Props) {
             <textarea id={section.id + "-text"} value={section.text} onChange={(e) => update(section.id, "text", e.target.value)} rows={6} maxLength={15000} placeholder="Escreva aqui. Separe os parágrafos com uma linha em branco." style={{ ...inputStyle, resize: "vertical", lineHeight: 1.75 }} />
             <label style={labelStyle} htmlFor={section.id + "-image"}>Imagem da seção (URL opcional)</label>
             <input id={section.id + "-image"} value={section.imageUrl} onChange={(e) => update(section.id, "imageUrl", e.target.value)} placeholder="https://site.com/foto.jpg" style={inputStyle} />
-            {section.imageUrl.trim() && <img src={section.imageUrl} alt={section.caption || section.heading || `Imagem da seção ${index + 1}`} style={{ display: "block", width: "100%", maxHeight: 280, objectFit: "cover", marginTop: 9, border: "1px solid #dbe2e9" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+            {safePreviewUrl(section.imageUrl) && <Image src={safePreviewUrl(section.imageUrl)!} alt={section.caption || section.heading || `Imagem da seção ${index + 1}`} width={1200} height={675} unoptimized sizes="(max-width: 760px) 100vw, 760px" style={{ display: "block", width: "100%", height: "auto", maxHeight: 280, objectFit: "cover", marginTop: 9, border: "1px solid #dbe2e9" }} onError={(event) => { event.currentTarget.style.display = "none"; }} />}
             <label style={labelStyle} htmlFor={section.id + "-caption"}>Legenda da imagem (opcional)</label>
             <input id={section.id + "-caption"} value={section.caption} onChange={(e) => update(section.id, "caption", e.target.value)} maxLength={240} placeholder="Uma breve descrição da imagem" style={inputStyle} />
           </section>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { getLatestPublishedPostSlugs, getPublishedPostBySlug, getRelatedPublishedPosts } from "@/lib/blogs";
@@ -172,7 +173,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div></header>
         <div className="article-breadcrumb container"><Link href="/">Início</Link><span>/</span><Link href="/#artigos">Artigos</Link><span>/</span><span>{post.category}</span></div>
         <article className="reading-article"><header className="reading-header"><span className="category">{post.category}</span><h1>{post.title}</h1><p className="reading-excerpt">{post.excerpt}</p><div className="reading-byline"><div className="author-mark">R</div><div><strong>Redação Rumo</strong><span>Conteúdo independente</span></div><span className="byline-divider" /><span>Publicado em {formatDate(post.published_at ?? post.created_at)}</span>{formatDate(post.updated_at) && formatDate(post.updated_at) !== formatDate(post.published_at ?? post.created_at) && <><span className="byline-divider" /><span className="article-updated">Atualizado em {formatDate(post.updated_at)}</span></>}</div></header>
-          {postImage ? <img src={postImage} alt={post.title} loading="eager" fetchPriority="high" decoding="async" style={{ display: "block", width: "min(1000px, calc(100% - 48px))", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
+          {postImage ? <Image src={postImage} alt={post.title} width={1600} height={900} sizes="(max-width: 1048px) calc(100vw - 48px), 1000px" unoptimized fetchPriority="high" style={{ display: "block", width: "min(1000px, calc(100% - 48px))", height: "auto", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover", margin: "0 auto 45px" }} /> : <div className="reading-cover" aria-hidden="true"><div className="cover-grid" /><div className="cover-copy"><span>RUMO / ARTIGO</span><strong>Conhecimento<br />em perspectiva.</strong><i>PUBLICAÇÃO</i></div></div>}
           <div className="reading-body">
             {structured?.intro && <p className="reading-intro" style={{ whiteSpace: "pre-line" }}>{structured.intro}</p>}
             <ArticleExtras toc={toc} />
@@ -182,7 +183,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <section key={index} id={section.heading?.trim() ? sectionId(section.heading.trim()) : undefined}>
                   {section.heading && <h2>{section.heading}</h2>}
                   {section.text?.split(/\n\s*\n/).map((paragraph, paragraphIndex) => paragraph.trim() && <p key={paragraphIndex}>{paragraph.trim()}</p>)}
-                  {imageUrl && <figure style={{ margin: "24px 0 28px" }}><img src={imageUrl} alt={section.caption || section.heading || post.title} loading="lazy" decoding="async" style={{ display: "block", width: "100%", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
+                  {imageUrl && <figure style={{ margin: "24px 0 28px" }}><Image src={imageUrl} alt={section.caption || section.heading || post.title} width={1200} height={675} sizes="(max-width: 760px) calc(100vw - 48px), 760px" unoptimized style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", maxHeight: 520, objectFit: "cover" }} />{section.caption && <figcaption style={{ marginTop: 8, color: "#7b8999", fontSize: 11, lineHeight: 1.6 }}>{section.caption}</figcaption>}</figure>}
                 </section>
               );
             }) : paragraphs.map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}

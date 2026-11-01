@@ -39,8 +39,16 @@ export default function LoadingArticle() {
             <Skeleton width={130} height={11} />
           </div>
         </header>
-        <div style={{ width: "min(1000px, calc(100% - 48px))", margin: "0 auto 45px" }}>
-          <Skeleton width="100%" height={320} />
+        <div
+          className="loading-article-cover"
+          style={{
+            width: "min(1000px, calc(100% - 48px))",
+            aspectRatio: "16 / 9",
+            maxHeight: 520,
+            margin: "0 auto 45px",
+          }}
+        >
+          <Skeleton width="100%" height="100%" />
         </div>
         <div className="reading-body">
           <SkeletonLines count={5} lastLineWidth="82%" />
