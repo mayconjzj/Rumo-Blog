@@ -29,7 +29,7 @@ function classifyReferrer(value: unknown, request: Request) {
     const isDomain = (domain: string) =>
       hostname === domain || hostname.endsWith("." + domain);
 
-    const source = hostname.startsWith("google.") || isDomain("google.com")
+    const source = /(^|\\.)google\\.[a-z.]+$/.test(hostname)
       ? "google"
       : isDomain("bing.com")
         ? "bing"
