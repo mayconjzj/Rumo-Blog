@@ -25,7 +25,9 @@ export async function GET(_request: Request, { params }: RouteContext) {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": 'inline; filename="artigo-cientifico.pdf"',
-        "Cache-Control": "public, max-age=300",
+        // PDFs are public only after publication. Keep browser freshness short
+        // and allow the CDN a small shared cache window to reduce DB reads.
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
         "X-Content-Type-Options": "nosniff",
       },
     });
