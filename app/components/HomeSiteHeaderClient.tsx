@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
-export default function HomeSiteHeaderClient() {
+export default function HomeSiteHeaderClient({ mobileActions }: { mobileActions: ReactNode }) {
   const pathname = usePathname();
   const isResearch = pathname === "/pesquisas" || pathname.startsWith("/pesquisas/");
 
@@ -23,6 +24,7 @@ export default function HomeSiteHeaderClient() {
           <Link href="/#sobre">Sobre</Link>
           <Link className={isResearch ? "nav-active" : undefined} aria-current={isResearch ? "page" : undefined} href="/pesquisas">Pesquisas</Link>
           <Link className={pathname === "/submeter" ? "nav-active" : undefined} aria-current={pathname === "/submeter" ? "page" : undefined} href="/submeter">Submeter artigo</Link>
+          {mobileActions}
         </nav>
       </details>
     </>
