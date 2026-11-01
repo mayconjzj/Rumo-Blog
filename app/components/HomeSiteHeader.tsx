@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import { connection } from "next/server";
 import { auth } from "@/lib/auth/server";
 import { communitySignOutAction } from "../comunidade/actions";
@@ -6,9 +6,13 @@ import Brand from "./ui/Brand";
 import Button from "./ui/Button";
 import HomeSiteHeaderClient from "./HomeSiteHeaderClient";
 
-async function DesktopSessionActions() {
+const getHeaderSession = cache(async () => {
   await connection();
-  const { data } = await auth.getSession();
+  return auth.getSession();
+});
+
+async function DesktopSessionActions() {
+  const { data } = await getHeaderSession();
   return (
     <div className="public-auth-actions">
       {data?.user ? (
@@ -26,8 +30,7 @@ async function DesktopSessionActions() {
 }
 
 async function MobileSessionActions() {
-  await connection();
-  const { data } = await auth.getSession();
+  const { data } = await getHeaderSession();
   return (
     <div className="mobile-auth-actions">
       {data?.user ? (
