@@ -1,46 +1,91 @@
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import { connection } from "next/server";
 import { auth } from "@/lib/auth/server";
-import Skeleton from "./ui/Skeleton";
+import { communitySignOutAction } from "../comunidade/actions";
+import Brand from "./ui/Brand";
+import Button from "./ui/Button";
 import HomeSiteHeaderClient from "./HomeSiteHeaderClient";
 
-async function SessionAwareHeader() {
+const getHeaderSession = cache(async () => {
   await connection();
-  const { data } = await auth.getSession();
-  return <HomeSiteHeaderClient isAuthenticated={Boolean(data?.user)} />;
+  return auth.getSession();
+});
+
+async function DesktopSessionActions() {
+  const { data } = await getHeaderSession();
+  return (
+    <div className="public-auth-actions">
+      {data?.user ? (
+        <form action={communitySignOutAction}>
+          <Button type="submit" variant="outline" className="public-login-link public-logout-button">Sair</Button>
+        </form>
+      ) : (
+        <>
+          <Button href="/login" variant="outline" className="public-login-link">Entrar</Button>
+          <Button href="/sign-up" variant="navy" className="public-signup-link" arrow="up-right">Criar conta</Button>
+        </>
+      )}
+    </div>
+  );
 }
 
-function HeaderFallback() {
+async function MobileSessionActions() {
+  const { data } = await getHeaderSession();
   return (
-    <>
-      <div className="top-strip header-fallback-strip" aria-hidden="true">
-        <div className="container top-strip-inner">
-          <Skeleton width={180} height={8} />
-          <Skeleton width={230} height={8} />
-        </div>
-      </div>
-      <header className="site-header" aria-busy="true" aria-label="Carregando navegação">
-        <div className="container nav-wrap header-fallback-nav">
-          <div className="header-fallback-brand">
-            <Skeleton width={35} height={35} />
-            <Skeleton width={86} height={22} />
-          </div>
-          <div className="header-fallback-links">
-            <Skeleton width={48} height={11} />
-            <Skeleton width={52} height={11} />
-            <Skeleton width={68} height={11} />
-          </div>
-          <Skeleton width={142} height={40} />
-        </div>
-      </header>
-    </>
+    <div className="mobile-auth-actions">
+      {data?.user ? (
+        <form action={communitySignOutAction}>
+          <Button type="submit" variant="outline" className="mobile-logout-button">Sair da conta</Button>
+        </form>
+      ) : (
+        <>
+          <Button href="/login" variant="outline" className="mobile-login-link">Entrar</Button>
+          <Button href="/sign-up" variant="navy" className="mobile-signup-link" arrow="up-right">Criar conta</Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AuthFallback({ mobile = false }: { mobile?: boolean }) {
+  return mobile ? (
+    <div className="mobile-auth-actions">
+      <Button href="/login" variant="outline" className="mobile-login-link">Entrar</Button>
+      <Button href="/sign-up" variant="navy" className="mobile-signup-link" arrow="up-right">Criar conta</Button>
+    </div>
+  ) : (
+    <div className="public-auth-actions">
+      <Button href="/login" variant="outline" className="public-login-link">Entrar</Button>
+      <Button href="/sign-up" variant="navy" className="public-signup-link" arrow="up-right">Criar conta</Button>
+    </div>
   );
 }
 
 export default function HomeSiteHeader() {
   return (
-    <Suspense fallback={<HeaderFallback />}>
-      <SessionAwareHeader />
-    </Suspense>
+    <>
+      <div className="top-strip">
+        <div className="container top-strip-inner">
+          <span>REVISTA CIENTÍFICA MULTIDISCIPLINAR</span>
+          <span>Ciência aberta · leitura gratuita · submissões gratuitas</span>
+        </div>
+      </div>
+      <header className="site-header">
+        <div className="container nav-wrap">
+          <Brand label="Rumo, página inicial" />
+          <HomeSiteHeaderClient
+            mobileActions={
+              <Suspense fallback={<AuthFallback mobile />}>
+                <MobileSessionActions />
+              </Suspense>
+            }
+          />
+          <Suspense fallback={<AuthFallback />}>
+            <DesktopSessionActions />
+          </Suspense>
+          <Button href="/submeter" variant="outline" className="admin-link" arrow="up-right">Submeter artigo</Button>
+        </div>
+      </header>
+    </>
   );
 }
