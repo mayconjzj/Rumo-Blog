@@ -9,8 +9,8 @@ function classifyReferrer(value: unknown, request: Request) {
   if (typeof value !== "string" || !value) return { host: null as string | null, source: "direct" };
   try {
     const referrer = new URL(value);
-    const currentHostname = new URL(request.url).hostname.toLowerCase().replace(/^www\\./, "");
-    const hostname = referrer.hostname.toLowerCase().replace(/^www\\./, "");
+    const currentHostname = new URL(request.url).hostname.toLowerCase().replace(/^www\./, "");
+    const hostname = referrer.hostname.toLowerCase().replace(/^www\./, "");
     if (referrer.protocol !== "https:" && referrer.protocol !== "http:") return { host: null, source: "direct" };
     if (hostname === currentHostname || hostname === "rumo-blog.vercel.app") return { host: null, source: "direct" };
     const isDomain = (domain: string) => hostname === domain || hostname.endsWith("." + domain);
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (!body || typeof body !== "object") return NextResponse.json({ ok: false }, { status: 400 });
     const payload = body as { path?: unknown; referrer?: unknown };
     const path = typeof payload.path === "string" ? payload.path : "";
-    if (!path.startsWith("/") || path.startsWith("//") || path.length > 500 || /[\\u0000-\\u001f]/.test(path) || isPrivatePath(path)) {
+    if (!path.startsWith("/") || path.startsWith("//") || path.length > 500 || /[\u0000-\u001f]/.test(path) || isPrivatePath(path)) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
     if (!process.env.DATABASE_URL) return NextResponse.json({ ok: false }, { status: 503 });
